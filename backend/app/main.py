@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 
 from app.core.config import settings
 from app.core.database import engine, Base, SessionLocal
@@ -25,15 +26,16 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    docs_url=f"{settings.API_V1_STR}/docs",
+    openapi_url="/api/openapi.json",
+    docs_url="/docs",
+    redoc_url="/redoc",
     lifespan=lifespan
 )
 
 # CORS setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,6 +47,21 @@ app.include_router(research_router, prefix=settings.API_V1_STR)
 app.include_router(documents_router, prefix=settings.API_V1_STR)
 app.include_router(admin_router, prefix=settings.API_V1_STR)
 app.include_router(portal_router, prefix=settings.API_V1_STR)
+
+@app.get("/")
+def root():
+    return {
+        "service": "Nova Solutions NexusGuard Core Platform API",
+        "status": "online",
+        "version": "1.0.0",
+        "interactive_api_docs": "/docs",
+        "health_check": "/api/health",
+        "frontend_instructions": "To view the user interface website, run 'npm run dev' inside the frontend folder and open http://localhost:5173"
+    }
+
+@app.get("/api/docs")
+def redirect_to_docs():
+    return RedirectResponse(url="/docs")
 
 @app.get("/api/health")
 def health_check():
