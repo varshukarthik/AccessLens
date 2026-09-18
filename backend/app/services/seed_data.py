@@ -1,3 +1,5 @@
+import os
+import json
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.models.document import Document
@@ -404,3 +406,70 @@ def seed_database(db: Session):
             db.add(lr)
         db.commit()
         print("[Seed] Leave requests and HR policy seeded successfully.")
+
+    # 6. Ingest full dataset bundle if present
+    bundle_path = os.path.join(os.path.dirname(__file__), "dataset_bundle.json")
+    if os.path.exists(bundle_path):
+        try:
+            with open(bundle_path, "r", encoding="utf-8") as f:
+                bundle = json.load(f)
+
+            # Ingest bundle users if missing
+            bundle_users = bundle.get("demo_users", bundle.get("users", []))
+            for u_data in bundle_users:
+                existing_u = db.query(User).filter(User.employee_id == u_data["employee_id"]).first()
+                if not existing_u:
+                    groups_list = []
+                    raw_projs = u_data.get("assigned_projects", "")
+                    if raw_projs and "none" not in raw_projs.lower():
+                        groups_list = [p.strip() for p in raw_projs.replace(";", ",").split(",") if p.strip()]
+
+                    new_user = User(
+                        employee_id=u_data["employee_id"],
+                        name=u_data["name"],
+                        email=u_data["email"],
+                        role=u_data["role"],
+                        department=u_data["department"],
+                        clearance=u_data["clearance"],
+                        status=u_data.get("status", "ACTIVE"),
+                        is_admin=u_data.get("is_admin", False),
+                        is_active=(u_data.get("status", "ACTIVE") == "ACTIVE"),
+                        manager_id=u_data.get("manager_id"),
+                        leave_balance=u_data.get("leave_balance", 18),
+                        groups_json=json.dumps(groups_list),
+                        password_hash=get_password_hash("password123")
+                    )
+                    db.add(new_user)
+            db.commit()
+
+            # Ingest bundle documents
+            bundle_docs = bundle.get("documents", [])
+            for d_data in bundle_docs:
+                existing_d = db.query(Document).filter(Document.doc_id == d_data["doc_id"]).first()
+                if not existing_d:
+                    new_doc = Document(
+                        doc_id=d_data["doc_id"],
+                        title=d_data["title"],
+                        description=d_data.get("description", ""),
+                        content=d_data["content"],
+                        summary=d_data.get("summary", ""),
+                        classification=d_data.get("classification", "Internal"),
+                        required_clearance=d_data.get("required_clearance", "Internal"),
+                        allowed_departments_json=json.dumps(d_data.get("allowed_departments", [])),
+                        allowed_roles_json=json.dumps(d_data.get("allowed_roles", [])),
+                        explicit_denies_json=json.dumps(d_data.get("explicit_denies", [])),
+                        owner_department=d_data.get("owner_department", "Corporate"),
+                        version=d_data.get("version", "1.0"),
+                        lineage_group=d_data.get("lineage_group", "GENERAL"),
+                        effective_date=d_data.get("effective_date", "2026-09-01"),
+                        status=d_data.get("status", "ACTIVE"),
+                        uploaded_by="Admin",
+                        is_searchable=d_data.get("is_searchable", True)
+                    )
+                    db.add(new_doc)
+            db.commit()
+            print(f"[Seed] Ingested dataset bundle: {len(bundle_users)} users, {len(bundle_docs)} documents.")
+        except Exception as e:
+            print(f"[Seed] Failed to ingest dataset bundle: {e}")
+            db.rollback()
+

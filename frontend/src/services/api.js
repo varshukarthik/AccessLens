@@ -148,7 +148,7 @@ export const api = {
       return await handleResponse(res);
     } catch (err) {
       const user = getCurrentStoredUser();
-      return mockBackend.queryNexusGuard(user, query);
+      return mockBackend.queryNexusGuard(user, query, sessionId);
     }
   },
 
@@ -159,7 +159,8 @@ export const api = {
       });
       return await handleResponse(res);
     } catch (err) {
-      return [];
+      const user = getCurrentStoredUser();
+      return mockBackend.getSessions(user);
     }
   },
 
@@ -170,7 +171,19 @@ export const api = {
       });
       return await handleResponse(res);
     } catch (err) {
-      return { messages: [] };
+      return mockBackend.getSessionDetail(sessionId);
+    }
+  },
+
+  async deleteSession(sessionId) {
+    try {
+      const res = await fetch(`${API_BASE}/research/sessions/${sessionId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      return await handleResponse(res);
+    } catch (err) {
+      return mockBackend.deleteSession(sessionId);
     }
   },
 

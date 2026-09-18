@@ -1,6 +1,8 @@
 // Resilient In-Browser ABAC Fallback Engine for standalone Vercel deployments
 // Provides 100% functional parity with the backend FastAPI service when no live API URL is configured.
 
+import datasetBundle from '../data/dataset_bundle.json';
+
 const CLASSIFICATION_LEVELS = {
   'PUBLIC': 0,
   'INTERNAL': 1,
@@ -336,7 +338,15 @@ const USER_DEFAULTS = {
   "U205": { manager_id: "EXEC001", leave_balance: 15 },
   "U301": { manager_id: "EXEC001", leave_balance: 20 },
   "Admin": { manager_id: "EXEC001", leave_balance: 22 },
-  "EXEC001": { manager_id: null, leave_balance: 25 }
+  "EXEC001": { manager_id: null, leave_balance: 25 },
+  "EMP-0242": { manager_id: "EMP-0105", leave_balance: 14 },
+  "EMP-0105": { manager_id: "EMP-0001", leave_balance: 18 },
+  "EMP-0046": { manager_id: "EMP-0001", leave_balance: 18 },
+  "EMP-0078": { manager_id: "EMP-0001", leave_balance: 18 },
+  "EMP-0001": { manager_id: null, leave_balance: 25 },
+  "EMP-0035": { manager_id: "EMP-0001", leave_balance: 18 },
+  "EMP-0248": { manager_id: "EMP-0035", leave_balance: 18 },
+  "EMP-0106": { manager_id: "EMP-0035", leave_balance: 18 }
 };
 
 const INITIAL_LEAVE_REQUESTS = [
@@ -393,10 +403,36 @@ const INITIAL_LEAVE_REQUESTS = [
 // Helper to get storage
 function getStoredUsers() {
   const data = localStorage.getItem('nova_users_store');
-  let users = INITIAL_USERS;
-  if (data) {
-    try { users = JSON.parse(data); } catch(e) {}
+  let users = [...INITIAL_USERS];
+
+  // Ingest demo users from datasetBundle if available
+  if (datasetBundle && (datasetBundle.demo_users || datasetBundle.users)) {
+    const bUsers = datasetBundle.demo_users || datasetBundle.users;
+    bUsers.forEach((bu, idx) => {
+      if (!users.some(u => u.employee_id === bu.employee_id)) {
+        users.push({
+          id: users.length + 1,
+          ...bu,
+          password: "password123"
+        });
+      }
+    });
   }
+
+  if (data) {
+    try {
+      const parsed = JSON.parse(data);
+      parsed.forEach(pu => {
+        const idx = users.findIndex(u => u.employee_id === pu.employee_id);
+        if (idx >= 0) {
+          users[idx] = { ...users[idx], ...pu };
+        } else {
+          users.push(pu);
+        }
+      });
+    } catch(e) {}
+  }
+
   users = users.map(u => ({
     ...u,
     manager_id: u.manager_id !== undefined ? u.manager_id : (USER_DEFAULTS[u.employee_id]?.manager_id ?? null),
@@ -421,11 +457,36 @@ function saveLeaveRequests(requests) {
 
 function getStoredDocuments() {
   const data = localStorage.getItem('nova_docs_store');
-  if (data) {
-    try { return JSON.parse(data); } catch(e) {}
+  let docs = [...INITIAL_DOCUMENTS];
+
+  // Ingest documents from datasetBundle
+  if (datasetBundle && datasetBundle.documents) {
+    datasetBundle.documents.forEach((bd) => {
+      if (!docs.some(d => d.doc_id === bd.doc_id)) {
+        docs.push({
+          id: docs.length + 1,
+          ...bd
+        });
+      }
+    });
   }
-  localStorage.setItem('nova_docs_store', JSON.stringify(INITIAL_DOCUMENTS));
-  return INITIAL_DOCUMENTS;
+
+  if (data) {
+    try {
+      const parsed = JSON.parse(data);
+      parsed.forEach(pd => {
+        const idx = docs.findIndex(d => d.doc_id === pd.doc_id);
+        if (idx >= 0) {
+          docs[idx] = { ...docs[idx], ...pd };
+        } else {
+          docs.push(pd);
+        }
+      });
+    } catch(e) {}
+  }
+
+  localStorage.setItem('nova_docs_store', JSON.stringify(docs));
+  return docs;
 }
 
 function getStoredAuditLogs() {
@@ -437,6 +498,15 @@ function addAuditLog(entry) {
   const logs = getStoredAuditLogs();
   logs.unshift(entry);
   localStorage.setItem('nova_audit_logs', JSON.stringify(logs.slice(0, 100)));
+}
+
+function getStoredSessions() {
+  const data = localStorage.getItem('nova_chat_sessions_store');
+  return data ? JSON.parse(data) : [];
+}
+
+function saveStoredSessions(sessions) {
+  localStorage.setItem('nova_chat_sessions_store', JSON.stringify(sessions));
 }
 
 // ABAC Policy Engine
@@ -461,6 +531,14 @@ function evaluatePolicy(user, doc) {
   if (doc.allowed_roles && doc.allowed_roles.length > 0) {
     if (!doc.allowed_roles.includes(user.role)) {
       return { is_allowed: false, reason_code: 'ROLE_NOT_ALLOWED' };
+    }
+  }
+
+  if (doc.allowed_projects && doc.allowed_projects.length > 0) {
+    const userProjects = (user.assigned_projects || '').split(/[,;]/).map(p => p.trim());
+    const hasProj = doc.allowed_projects.some(p => userProjects.includes(p));
+    if (!hasProj) {
+      return { is_allowed: false, reason_code: 'PROJECT_NOT_ALLOWED' };
     }
   }
 
@@ -577,12 +655,119 @@ export const mockBackend = {
     return docs.filter(d => d.is_searchable && evaluatePolicy(user, d).is_allowed);
   },
 
-  queryNexusGuard(user, query) {
+  getSessions(user) {
+    const all = getStoredSessions();
+    const empId = user?.employee_id || user?.id;
+    return all
+      .filter(s => !empId || s.user_id === empId || s.user_id === user?.id)
+      .sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at));
+  },
+
+  getSessionDetail(sessionId) {
+    const all = getStoredSessions();
+    const found = all.find(s => s.session_id === sessionId);
+    if (!found) {
+      return { session_id: sessionId, title: "New Research Session", created_at: new Date().toISOString(), messages: [] };
+    }
+    return found;
+  },
+
+  deleteSession(sessionId) {
+    let all = getStoredSessions();
+    all = all.filter(s => s.session_id !== sessionId);
+    saveStoredSessions(all);
+    return { success: true, message: "Session deleted successfully" };
+  },
+
+  queryNexusGuard(user, query, sessionId = null) {
     const docs = getStoredDocuments();
     const queryLower = (query || '').toLowerCase().trim();
     const requestId = `REQ-${Date.now().toString().slice(-6)}`;
 
-    // 0. Governed Workplace Action Intent Recognition
+    // 1. Session Resolution & Persistence
+    const allSessions = getStoredSessions();
+    let currentSession = null;
+    const effectiveSessionId = sessionId || `SES-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+
+    if (sessionId) {
+      currentSession = allSessions.find(s => s.session_id === sessionId);
+    }
+
+    if (!currentSession) {
+      currentSession = {
+        session_id: effectiveSessionId,
+        user_id: user?.employee_id || 'UNKNOWN',
+        title: query.trim().slice(0, 40) + (query.trim().length > 40 ? '...' : ''),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        messages: []
+      };
+      allSessions.unshift(currentSession);
+    } else {
+      currentSession.updated_at = new Date().toISOString();
+    }
+
+    // Save user message in session
+    currentSession.messages.push({
+      id: Date.now(),
+      session_id: effectiveSessionId,
+      sender: "user",
+      content: query,
+      citations: [],
+      created_at: new Date().toISOString()
+    });
+
+    const finishResponse = (res) => {
+      res.session_id = effectiveSessionId;
+      currentSession.messages.push({
+        id: Date.now() + 1,
+        session_id: effectiveSessionId,
+        sender: "nexusguard",
+        content: res.answer,
+        evidence_status: res.evidence_status,
+        citations: res.citations || [],
+        action_card: res.action_card || null,
+        request_id: res.request_id,
+        created_at: new Date().toISOString()
+      });
+      saveStoredSessions(allSessions);
+      return res;
+    };
+
+    // 2. Security Check: Terminated employee check
+    if (user && user.status === 'TERMINATED') {
+      return finishResponse({
+        session_id: effectiveSessionId,
+        request_id: requestId,
+        status: "DENY",
+        evidence_status: "NO_AUTHORIZED_EVIDENCE",
+        answer: "Access denied: Employee account status is TERMINATED. All retrieval access permanently disabled under Security Policy DOC-SEC-001.",
+        citations: []
+      });
+    }
+
+    // 3. Security Check: Prompt Injection Defense
+    const injectionPatterns = [
+      /ignore\s+(all\s+)?(previous\s+)?(security\s+)?rules/i,
+      /you\s+are\s+(an?\s+)?unrestricted\s+ai/i,
+      /system\s+override/i,
+      /maintenance\s+mode/i,
+      /disable\s+all\s+guardrails/i,
+      /bypass\s+policy/i,
+      /disregard\s+all\s+instructions/i
+    ];
+    if (injectionPatterns.some(p => p.test(queryLower))) {
+      return finishResponse({
+        session_id: effectiveSessionId,
+        request_id: requestId,
+        status: "DENY",
+        evidence_status: "NO_AUTHORIZED_EVIDENCE",
+        answer: "Access denied: Security violation detected. Prompt injection payload blocked at pre-retrieval policy gate.",
+        citations: []
+      });
+    }
+
+    // 4. Governed Workplace Action Intent Recognition
     const isApplyLeave = (queryLower.includes('apply') && queryLower.includes('leave')) ||
                          (queryLower.includes('request') && queryLower.includes('leave')) ||
                          queryLower.includes('take leave') || queryLower.includes('submit leave') || queryLower.includes('book leave');
@@ -635,8 +820,8 @@ export const mockBackend = {
           reason: reason
         });
 
-        return {
-          session_id: `ses-${Date.now()}`,
+        return finishResponse({
+          session_id: effectiveSessionId,
           request_id: requestId,
           status: "ACTION_PROCESSED",
           evidence_status: "WORKPLACE_ACTION",
@@ -664,23 +849,23 @@ export const mockBackend = {
             remaining_balance: user.leave_balance,
             created_at: req.created_at
           }
-        };
+        });
       } catch (err) {
-        return {
-          session_id: `ses-${Date.now()}`,
+        return finishResponse({
+          session_id: effectiveSessionId,
           request_id: requestId,
           status: "ERROR",
           evidence_status: "WORKPLACE_ACTION",
           answer: `Unable to submit leave request: ${err.message}`,
           citations: []
-        };
+        });
       }
     }
 
     if (isBalanceInquiry) {
       const summary = this.getLeaveBalance(user.employee_id);
-      return {
-        session_id: `ses-${Date.now()}`,
+      return finishResponse({
+        session_id: effectiveSessionId,
         request_id: requestId,
         status: "SUCCESS",
         evidence_status: "WORKPLACE_ACTION",
@@ -699,41 +884,43 @@ export const mockBackend = {
           remaining_balance: summary.leave_balance,
           status: "ACTIVE"
         }
-      };
+      });
     }
 
     if (isStatusInquiry) {
       const requests = this.getMyLeaveRequests(user.employee_id);
       if (requests.length === 0) {
-        return {
-          session_id: `ses-${Date.now()}`,
+        return finishResponse({
+          session_id: effectiveSessionId,
           request_id: requestId,
           status: "SUCCESS",
           evidence_status: "WORKPLACE_ACTION",
           answer: `You currently have no active or historical leave requests on record.`,
           citations: []
-        };
+        });
       }
       const listSummary = requests.map(r => `• ${r.request_id}: ${r.start_date} to ${r.end_date} (${r.days_count} days) — Status: [${r.status}] (Approver: ${r.approver_name})`).join('\n');
-      return {
-        session_id: `ses-${Date.now()}`,
+      return finishResponse({
+        session_id: effectiveSessionId,
         request_id: requestId,
         status: "SUCCESS",
         evidence_status: "WORKPLACE_ACTION",
         answer: `Your recorded leave requests:\n\n${listSummary}`,
         citations: []
-      };
+      });
     }
 
-    // 1. Candidate Retrieval (Keyword Matching)
+    // 5. Candidate Retrieval (Keyword Matching)
     const tokens = queryLower.split(/\s+/).filter(t => t.length > 2);
     const candidates = docs.filter(d => {
       if (!d.is_searchable) return false;
-      const text = `${d.title} ${d.content} ${d.description}`.toLowerCase();
-      return tokens.some(tok => text.includes(tok)) || text.includes(queryLower);
+      const text = `${d.title} ${d.content} ${d.description} ${d.doc_id}`.toLowerCase();
+      return (d.doc_id && d.doc_id.toLowerCase().includes(queryLower)) ||
+             (d.title && d.title.toLowerCase().includes(queryLower)) ||
+             tokens.some(tok => text.includes(tok));
     });
 
-    // 2. Pre-LLM Deterministic Authorization Gate
+    // 6. Pre-LLM Deterministic Authorization Gate
     const decisions = [];
     const authorized = [];
 
@@ -750,7 +937,7 @@ export const mockBackend = {
       }
     });
 
-    // 3. Version Resolution (Group by lineage_group & pick highest version)
+    // 7. Version Resolution (Group by lineage_group & pick highest version)
     const lineageGroups = {};
     authorized.forEach(doc => {
       const groupKey = doc.lineage_group || doc.doc_id;
@@ -760,7 +947,7 @@ export const mockBackend = {
     });
     const selectedDocs = Object.values(lineageGroups);
 
-    // 4. Record Audit Log
+    // 8. Record Audit Log
     addAuditLog({
       request_id: requestId,
       timestamp: new Date().toISOString(),
@@ -774,32 +961,34 @@ export const mockBackend = {
       authorized_ids: authorized.map(a => a.doc_id),
       selected_ids: selectedDocs.map(s => s.doc_id),
       response_status: selectedDocs.length > 0 ? 'SUCCESS' : 'NO_AUTHORIZED_EVIDENCE',
-      answer_preview: selectedDocs.length > 0 ? selectedDocs[0].summary : 'No authorized evidence available.'
+      answer_preview: selectedDocs.length > 0 ? (selectedDocs[0].summary || selectedDocs[0].title) : 'No authorized evidence available.'
     });
 
-    // 5. Response Synthesis (Safe Insufficient Access Refusal vs. Grounded Answer)
+    // 9. Response Synthesis (Safe Insufficient Access Refusal vs. Grounded Answer)
     if (selectedDocs.length === 0) {
-      return {
-        session_id: `ses-${Date.now()}`,
+      return finishResponse({
+        session_id: effectiveSessionId,
         request_id: requestId,
         status: "NO_AUTHORIZED_EVIDENCE",
         evidence_status: "NO_AUTHORIZED_EVIDENCE",
         answer: `I do not have sufficient accessible evidence in your authorized document clearance to answer this question. Please verify your department permissions or contact your system administrator.`,
         citations: []
-      };
+      });
     }
 
     // Build Grounded Answer from Authorized Evidence
     let answerText = "";
-    if (queryLower.includes('revenue') || queryLower.includes('forecast') || queryLower.includes('q4')) {
-      const mainDoc = selectedDocs[0];
-      answerText = `Based on authorized records for ${user?.department} (${mainDoc.doc_id} v${mainDoc.version}), ${mainDoc.content}`;
+    const mainDoc = selectedDocs[0];
+    if (mainDoc.summary && mainDoc.summary.length > 30) {
+      answerText = `Based on authorized records (${mainDoc.doc_id} v${mainDoc.version} - ${mainDoc.title}):\n\n${mainDoc.summary}`;
+    } else if (mainDoc.content) {
+      const preview = mainDoc.content.length > 450 ? mainDoc.content.slice(0, 450) + "..." : mainDoc.content;
+      answerText = `Based on authorized records (${mainDoc.doc_id} v${mainDoc.version} - ${mainDoc.title}):\n\n${preview}`;
     } else {
-      const summaries = selectedDocs.map(d => `${d.title} (${d.doc_id}): ${d.content}`).join("\n\n");
-      answerText = `According to authorized records:\n\n${summaries}`;
+      answerText = `Authorized document ${mainDoc.doc_id} (${mainDoc.title}) verified.`;
     }
 
-    const citations = selectedDocs.map(d => ({
+    const citations = selectedDocs.slice(0, 3).map(d => ({
       document_id: d.doc_id,
       title: d.title,
       version: d.version,
@@ -807,14 +996,14 @@ export const mockBackend = {
       classification: d.classification
     }));
 
-    return {
-      session_id: `ses-${Date.now()}`,
+    return finishResponse({
+      session_id: effectiveSessionId,
       request_id: requestId,
       status: "SUCCESS",
       evidence_status: "AUTHORIZED_EVIDENCE_USED",
       answer: answerText,
       citations: citations
-    };
+    });
   },
 
   getAllDocuments() {

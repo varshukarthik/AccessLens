@@ -1,5 +1,6 @@
 import time
 import uuid
+from datetime import datetime, timezone
 from typing import Optional, Dict, Any, List
 from sqlalchemy.orm import Session
 
@@ -53,6 +54,9 @@ class ResearchOrchestrator:
                     title=query[:40] + ("..." if len(query) > 40 else "")
                 )
                 db.add(chat_session)
+                db.commit()
+            else:
+                chat_session.updated_at = datetime.now(timezone.utc)
                 db.commit()
 
         # Save user message in chat history
