@@ -24,9 +24,29 @@ async function handleResponse(response) {
       localStorage.removeItem('nexusguard_user');
     }
   }
-  const data = await response.json();
+
+  const rawText = await response.text();
+  let data = {};
+  
+  if (rawText) {
+    try {
+      data = JSON.parse(rawText);
+    } catch (err) {
+      // If Vercel returned HTML (e.g. index.html rewrite or 404 page) because backend is not configured
+      if (!response.ok || rawText.trim().startsWith('<')) {
+        const errorMsg = !response.ok 
+          ? `Backend unreachable (${response.status}). Please ensure backend is running or VITE_API_URL is configured.`
+          : 'Backend returned invalid response. Please verify VITE_API_URL environment variable on Vercel.';
+        const error = new Error(errorMsg);
+        error.status = response.status;
+        throw error;
+      }
+      data = { detail: rawText };
+    }
+  }
+
   if (!response.ok) {
-    const error = new Error(data.detail || 'An API error occurred');
+    const error = new Error(data.detail || `Request failed with status ${response.status}`);
     error.status = response.status;
     error.data = data;
     throw error;
