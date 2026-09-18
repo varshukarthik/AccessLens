@@ -14,8 +14,59 @@ import {
   EyeOff, 
   Sun, 
   Moon,
-  KeyRound
+  KeyRound,
+  Sparkles,
+  ChevronDown,
+  Zap
 } from 'lucide-react';
+
+const DEMO_PERSONAS = [
+  {
+    id: "U102",
+    name: "David Chen",
+    role: "Financial Analyst",
+    department: "Finance",
+    clearance: "Internal",
+    password: "password123",
+    description: "Finance revenue access (₹120 Cr), Leave application"
+  },
+  {
+    id: "U205",
+    name: "Sarah Jenkins",
+    role: "Marketing Manager",
+    department: "Marketing",
+    clearance: "Internal",
+    password: "password123",
+    description: "Marketing boundary, safe redirection alternatives, HR policies"
+  },
+  {
+    id: "U301",
+    name: "Michael Ross",
+    role: "Financial Controller",
+    department: "Finance",
+    clearance: "Internal",
+    password: "password123",
+    description: "Version resolution (₹125 Cr from DOC-302 v2.0), Reporting manager approvals"
+  },
+  {
+    id: "EXEC001",
+    name: "Victoria Sterling",
+    role: "Chief Executive Officer",
+    department: "Executive",
+    clearance: "Restricted",
+    password: "execpassword",
+    description: "C-Suite executive access, M&A acquisitions (₹145 Cr valuation)"
+  },
+  {
+    id: "Admin",
+    name: "Elena Vance",
+    role: "Security Officer & Admin",
+    department: "Security",
+    clearance: "Restricted",
+    password: "adminpassword",
+    description: "Admin console, policy simulator, audit inspector, document controls"
+  }
+];
 
 export default function Login() {
   const { login } = useAuth();
@@ -28,6 +79,42 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showForgotNotice, setShowForgotNotice] = useState(false);
+  const [selectedPersonaId, setSelectedPersonaId] = useState('');
+
+  const selectedPersona = DEMO_PERSONAS.find(p => p.id === selectedPersonaId);
+
+  const handlePersonaChange = (e) => {
+    const pId = e.target.value;
+    setSelectedPersonaId(pId);
+    const found = DEMO_PERSONAS.find(p => p.id === pId);
+    if (found) {
+      setEmployeeId(found.id);
+      setPassword(found.password);
+      setError('');
+    }
+  };
+
+  const handleAutoLogin = async (persona) => {
+    setEmployeeId(persona.id);
+    setPassword(persona.password);
+    setSelectedPersonaId(persona.id);
+    setError('');
+    setShowForgotNotice(false);
+    setLoading(true);
+
+    try {
+      const user = await login(persona.id, persona.password);
+      if (user.is_admin) {
+        navigate('/admin');
+      } else {
+        navigate('/portal/dashboard');
+      }
+    } catch (err) {
+      setError(err.message || 'Invalid Employee ID/Email or password.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -170,6 +257,76 @@ export default function Login() {
               )}
             </button>
           </form>
+
+          {/* Demonstration Quick-Fill Dropdown */}
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center space-x-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Demo Credential Auto-Fill</span>
+              </span>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
+                Quick Demonstration
+              </span>
+            </div>
+
+            <div className="relative">
+              <select
+                value={selectedPersonaId}
+                onChange={handlePersonaChange}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-dashed border-emerald-500/60 dark:border-emerald-500/40 bg-emerald-50/50 dark:bg-emerald-950/30 text-slate-800 dark:text-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/40 cursor-pointer appearance-none pr-9 transition"
+              >
+                <option value="" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                  -- Select Demo Persona to Auto-Fill --
+                </option>
+                {DEMO_PERSONAS.map((p) => (
+                  <option key={p.id} value={p.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                    {p.name} ({p.id}) — {p.role} [{p.clearance}]
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-emerald-600 dark:text-emerald-400">
+                <ChevronDown className="w-4 h-4" />
+              </div>
+            </div>
+
+            {selectedPersona && (
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700/80 space-y-2.5 text-xs animate-in fade-in duration-150">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <div className="font-bold text-slate-900 dark:text-white flex items-center space-x-1.5">
+                      <span>{selectedPersona.name}</span>
+                      <span className="font-mono text-[10px] px-1.5 py-0.2 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                        {selectedPersona.id}
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
+                      {selectedPersona.role} • {selectedPersona.department}
+                    </span>
+                  </div>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold font-mono ${
+                    selectedPersona.clearance === 'Restricted'
+                      ? 'bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
+                      : 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+                  }`}>
+                    {selectedPersona.clearance}
+                  </span>
+                </div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 italic">
+                  {selectedPersona.description}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleAutoLogin(selectedPersona)}
+                  disabled={loading}
+                  className="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow-xs transition flex items-center justify-center space-x-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>Instant Sign In as {selectedPersona.name.split(' ')[0]} ({selectedPersona.id})</span>
+                </button>
+              </div>
+            )}
+          </div>
 
           <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
             <span className="flex items-center space-x-1">
