@@ -20,7 +20,8 @@ import {
   Building2,
   Briefcase,
   ShieldAlert,
-  ChevronRight
+  ChevronRight,
+  ChevronDown
 } from 'lucide-react';
 
 const SUGGESTED_CATEGORIES = [
@@ -135,6 +136,7 @@ export default function NexusGuard() {
 
   const [selectedCitation, setSelectedCitation] = useState(null);
   const [isCitationModalOpen, setIsCitationModalOpen] = useState(false);
+  const [expandedScopeMsgId, setExpandedScopeMsgId] = useState(null);
 
   const messagesEndRef = useRef(null);
 
@@ -179,21 +181,18 @@ export default function NexusGuard() {
     }
   }, [location.state?.runKey]);
 
-  const handleSelectSession = async (sessionId) => {
-    setActiveSessionId(sessionId);
-    try {
-      const detail = await api.getSessionDetail(sessionId);
-      setMessages(detail.messages || []);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const handleNewSession = () => {
     setActiveSessionId(null);
     setMessages([]);
-    setQueryInput('');
     setError(null);
+  };
+
+  const handleSelectSession = (sessionId) => {
+    setActiveSessionId(sessionId);
+    const session = sessions.find((s) => s.session_id === sessionId);
+    if (session) {
+      setMessages(session.messages || []);
+    }
   };
 
   const handleDeleteSession = async (e, sessionId) => {
@@ -243,6 +242,8 @@ export default function NexusGuard() {
         evidence_status: response.evidence_status,
         request_id: response.request_id,
         action_card: response.action_card || null,
+        response_scope: response.response_scope || null,
+        untrusted_instruction_detected: response.untrusted_instruction_detected || false,
         created_at: new Date().toISOString()
       };
 
@@ -564,6 +565,91 @@ export default function NexusGuard() {
                               </div>
                             </div>
                           )}
+
+                          {m.untrusted_instruction_detected && (
+                            <div className="p-3.5 rounded-xl bg-amber-500/10 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 flex items-start space-x-3 text-xs">
+                              <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                              <div className="space-y-1">
+                                <div className="font-bold text-amber-900 dark:text-amber-200 flex items-center space-x-2">
+                                  <span>Prompt Injection & Untrusted Instruction Neutralized</span>
+                                  <span className="text-[10px] font-mono px-2 py-0.2 rounded bg-amber-200 dark:bg-amber-800/80 text-amber-900 dark:text-amber-100 font-semibold">
+                                    DEFENSE VERIFIED
+                                  </span>
+                                </div>
+                                <p className="text-amber-800 dark:text-amber-300 leading-relaxed text-[11px]">
+                                  NexusGuard detected an untrusted instruction or adversarial override in the query/document payload. The adversarial payload was quarantined and ignored, and only verified factual evidence was evaluated.
+                                </p>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Interactive Access Scope & Policy Explainer ("Why this response?") */}
+                          <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex flex-col space-y-2">
+                            <button
+                              type="button"
+                              onClick={() => setExpandedScopeMsgId(expandedScopeMsgId === m.id ? null : m.id)}
+                              className="inline-flex items-center space-x-1.5 text-[11px] font-medium text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition cursor-pointer self-start"
+                            >
+                              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                              <span>Why this response? (Access Scope & Policy Details)</span>
+                              <ChevronDown className={`w-3 h-3 transition-transform ${expandedScopeMsgId === m.id ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {expandedScopeMsgId === m.id && (
+                              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-xs space-y-3">
+                                <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-slate-700/60">
+                                  <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center space-x-1.5">
+                                    <span>Identity Context:</span>
+                                    <strong className="text-emerald-700 dark:text-emerald-400">{m.response_scope?.user_name || user?.name}</strong>
+                                    <span className="text-slate-400">({m.response_scope?.user_department || user?.department})</span>
+                                  </span>
+                                  <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold">
+                                    Clearance: {m.response_scope?.user_clearance || user?.clearance}
+                                  </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px]">
+                                  <div>
+                                    <span className="text-slate-400 block mb-1">Requested Topic:</span>
+                                    <span className="font-medium text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 px-2 py-1 rounded border border-slate-200 dark:border-slate-800 block truncate">
+                                      {m.response_scope?.requested_topic || "Enterprise Record Retrieval"}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="text-slate-400 block mb-1">Evaluated Policy Rule:</span>
+                                    <span className="font-mono text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-1 rounded border border-emerald-200 dark:border-emerald-800 block truncate">
+                                      {m.response_scope?.policy_applied || "ABAC-SEC-POL-01 (Deterministic Gate)"}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <span className="text-slate-400 text-[11px] block">Permitted Knowledge Domains:</span>
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {(m.response_scope?.allowed_domains || [`${user?.department || 'Employee'} Records`, "General Operations", "HR Policy DOC-401"]).map((dom, i) => (
+                                      <span key={i} className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[10px] font-medium border border-emerald-200 dark:border-emerald-800">
+                                        ✓ {dom}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                {(m.response_scope?.restricted_domains && m.response_scope.restricted_domains.length > 0) && (
+                                  <div className="space-y-1.5">
+                                    <span className="text-slate-400 text-[11px] block">Excluded / Restricted Domains:</span>
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {m.response_scope.restricted_domains.map((rdom, i) => (
+                                        <span key={i} className="px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 text-[10px] font-medium border border-rose-200 dark:border-rose-800 flex items-center space-x-1">
+                                          <Lock className="w-2.5 h-2.5 mr-0.5" />
+                                          <span>{rdom}</span>
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>

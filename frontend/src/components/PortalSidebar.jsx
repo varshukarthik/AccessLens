@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Activity,
   Settings,
+  Play,
   FileText
 } from 'lucide-react';
 
@@ -20,6 +21,7 @@ export default function PortalSidebar() {
   const links = [
     { name: 'Workspace', path: '/portal/dashboard', icon: LayoutDashboard },
     { name: 'NexusGuard AI', path: '/portal/nexusguard', icon: Sparkles, badge: 'AI' },
+    { name: 'Demo Scenarios', path: '/portal/playground', icon: Play, badge: '15' },
     { name: 'My Tasks', path: '/portal/tasks', icon: CheckSquare },
     { name: 'Approvals', path: '/portal/approvals', icon: CheckCircle2 },
     { name: 'My Documents', path: '/portal/documents', icon: FileText },

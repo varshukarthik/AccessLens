@@ -15,6 +15,7 @@ import Solutions from './pages/public/Solutions';
 import Careers from './pages/public/Careers';
 import Contact from './pages/public/Contact';
 import Login from './pages/public/Login';
+import PublicAssistant from './pages/public/PublicAssistant';
 
 // Portal Pages
 import Dashboard from './pages/portal/Dashboard';
@@ -26,6 +27,7 @@ import SecurityCenterPage from './pages/portal/SecurityCenterPage';
 import AuditActivityPage from './pages/portal/AuditActivityPage';
 import SettingsPage from './pages/portal/SettingsPage';
 import History from './pages/portal/History';
+import DemoPlayground from './pages/portal/DemoPlayground';
 
 // Admin Pages
 import AdminOverview from './pages/admin/AdminOverview';
@@ -34,6 +36,7 @@ import AdminDocuments from './pages/admin/AdminDocuments';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminPolicies from './pages/admin/AdminPolicies';
 import AdminAuditLogs from './pages/admin/AdminAuditLogs';
+import PolicySimulator from './pages/admin/PolicySimulator';
 
 export default function App() {
   return (
@@ -49,6 +52,8 @@ export default function App() {
               <Route path="/careers" element={<Careers />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/public-assistant" element={<PublicAssistant />} />
+              <Route path="/demo-scenarios" element={<DemoPlayground />} />
             </Route>
 
             {/* Protected Employee Intranet */}
@@ -56,6 +61,7 @@ export default function App() {
               <Route index element={<Navigate to="/portal/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="nexusguard" element={<NexusGuard />} />
+              <Route path="playground" element={<DemoPlayground />} />
               <Route path="tasks" element={<TasksPage />} />
               <Route path="approvals" element={<ApprovalsPage />} />
               <Route path="documents" element={<Documents />} />
@@ -68,6 +74,7 @@ export default function App() {
             {/* Protected Security & Governance Admin */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminOverview />} />
+              <Route path="simulator" element={<PolicySimulator />} />
               <Route path="security-inspector" element={<SecurityInspector />} />
               <Route path="documents" element={<AdminDocuments />} />
               <Route path="users" element={<AdminUsers />} />

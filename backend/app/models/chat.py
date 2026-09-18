@@ -22,6 +22,8 @@ class ChatMessage(Base):
     sender = Column(String(20), nullable=False)  # "user" or "nexusguard"
     content = Column(Text, nullable=False)
     citations_json = Column(Text, nullable=False, default="[]")
+    response_scope_json = Column(Text, nullable=True, default="{}")
+    untrusted_instruction_detected = Column(Integer, nullable=True, default=0)
     evidence_status = Column(String(50), nullable=True)  # "AUTHORIZED_EVIDENCE_USED", "NO_AUTHORIZED_EVIDENCE", etc.
     request_id = Column(String(100), nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
@@ -36,3 +38,14 @@ class ChatMessage(Base):
     @citations.setter
     def citations(self, val):
         self.citations_json = json.dumps(val if isinstance(val, list) else [])
+
+    @property
+    def response_scope(self):
+        try:
+            return json.loads(self.response_scope_json) if self.response_scope_json else None
+        except Exception:
+            return None
+
+    @response_scope.setter
+    def response_scope(self, val):
+        self.response_scope_json = json.dumps(val if val else {})

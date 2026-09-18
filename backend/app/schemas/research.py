@@ -22,6 +22,8 @@ class ResearchResponse(BaseModel):
     evidence_status: str  # AUTHORIZED_EVIDENCE_USED | NO_AUTHORIZED_EVIDENCE | CONFLICT_DETECTED | WORKPLACE_ACTION
     session_id: str
     action_card: Optional[Any] = None
+    response_scope: Optional[Any] = None
+    untrusted_instruction_detected: Optional[bool] = False
     
     # Note: Admin traces are NEVER included in this employee response schema.
 
@@ -33,6 +35,8 @@ class ChatMessageResponse(BaseModel):
     citations: List[CitationItem] = []
     evidence_status: Optional[str] = None
     request_id: Optional[str] = None
+    response_scope: Optional[Any] = None
+    untrusted_instruction_detected: Optional[bool] = False
     created_at: datetime
 
     class Config:

@@ -728,6 +728,8 @@ export const mockBackend = {
         citations: res.citations || [],
         action_card: res.action_card || null,
         request_id: res.request_id,
+        response_scope: res.response_scope || null,
+        untrusted_instruction_detected: res.untrusted_instruction_detected || false,
         created_at: new Date().toISOString()
       });
       saveStoredSessions(allSessions);
@@ -742,7 +744,17 @@ export const mockBackend = {
         status: "DENY",
         evidence_status: "NO_AUTHORIZED_EVIDENCE",
         answer: "Access denied: Employee account status is TERMINATED. All retrieval access permanently disabled under Security Policy DOC-SEC-001.",
-        citations: []
+        citations: [],
+        response_scope: {
+          user_name: user?.name,
+          user_department: user?.department,
+          user_clearance: user?.clearance,
+          requested_topic: "Terminated Account Access",
+          allowed_domains: [],
+          restricted_domains: ["All Corporate Assets"],
+          response_mode: "TERMINATED_DENIAL",
+          policy_applied: "SEC-POL-01 (Account Status Gate)"
+        }
       });
     }
 
@@ -760,10 +772,67 @@ export const mockBackend = {
       return finishResponse({
         session_id: effectiveSessionId,
         request_id: requestId,
-        status: "DENY",
+        status: "NO_AUTHORIZED_EVIDENCE",
         evidence_status: "NO_AUTHORIZED_EVIDENCE",
-        answer: "Access denied: Security violation detected. Prompt injection payload blocked at pre-retrieval policy gate.",
-        citations: []
+        answer: "I couldn't find sufficient accessible evidence in company records to answer that question. Security Policy Violation: Prompt injection and adversarial override attempts are strictly blocked at the pre-retrieval policy gate.",
+        citations: [],
+        untrusted_instruction_detected: true,
+        response_scope: {
+          user_name: user?.name,
+          user_department: user?.department,
+          user_clearance: user?.clearance,
+          requested_topic: "Adversarial Policy Bypass Attempt",
+          allowed_domains: [`${user?.department || 'Employee'} Operations`],
+          restricted_domains: ["Security Safeguards", "System Prompts", "Restricted Executive Records"],
+          response_mode: "ADVERSARIAL_BLOCKED",
+          policy_applied: "SEC-POL-01 (Pre-Retrieval Input Boundary Gate)"
+        }
+      });
+    }
+
+    // 3b. Sensitive Individual PII & Salary Refusal (Pattern D)
+    const piiKeywords = ["salary of", "salaries", "compensation of", "how much does", "pay slip", "payroll details"];
+    const isPiiQuery = piiKeywords.some(kw => queryLower.includes(kw)) && !queryLower.includes("policy") && !queryLower.includes("guideline");
+    if (isPiiQuery && user?.role !== "Chief Executive Officer" && user?.role !== "Security Officer") {
+      return finishResponse({
+        session_id: effectiveSessionId,
+        request_id: requestId,
+        status: "NO_AUTHORIZED_EVIDENCE",
+        evidence_status: "NO_AUTHORIZED_EVIDENCE",
+        answer: "I couldn't find sufficient accessible evidence in your authorized document clearance to access individual employee compensation or personal PII records. Under Nova Solutions Data Privacy & Governance Policy (SEC-POL-09), individual compensation, performance evaluations, and salary structures are strictly confidential and restricted to authorized HR Leadership and Executive Officers.\n\nYou may, however, review general employee benefit provisions and standard PTO entitlements in the Employee Handbook (DOC-401 / DOC-HR-001).",
+        citations: [],
+        response_scope: {
+          user_name: user?.name,
+          user_department: user?.department,
+          user_clearance: user?.clearance,
+          requested_topic: "Employee Compensation & PII",
+          allowed_domains: [`${user?.department} Operations`, "General HR Policies"],
+          restricted_domains: ["Individual Compensation", "Confidential PII"],
+          response_mode: "PII_RESTRICTED",
+          policy_applied: "SEC-POL-09 (PII & Compensation Privacy Gate)"
+        }
+      });
+    }
+
+    // 3c. Clarification Required for Ambiguous Project Roadmap (Pattern E)
+    if (["show me the project roadmap", "show me the roadmap", "what is the roadmap", "what is our roadmap", "project roadmap"].includes(queryLower.trim())) {
+      return finishResponse({
+        session_id: effectiveSessionId,
+        request_id: requestId,
+        status: "NO_AUTHORIZED_EVIDENCE",
+        evidence_status: "NO_AUTHORIZED_EVIDENCE",
+        answer: "Could you please clarify which project or domain you are inquiring about? Nova Solutions currently maintains distinct roadmaps for:\n\n1. **Project Orion** — Enterprise Data Fabric & Inventory Analytics (`DOC-ENG-001`)\n2. **Project Atlas** — Multi-Region Cloud & Infrastructure Migration (`DOC-ENG-002`)\n3. **Marketing Roadmap** — Brand Strategy & Product Launch Milestones (`DOC-MKT-001`)\n\nPlease specify the initiative or department name so I can retrieve the exact authorized documentation for your clearance.",
+        citations: [],
+        response_scope: {
+          user_name: user?.name,
+          user_department: user?.department,
+          user_clearance: user?.clearance,
+          requested_topic: "General Enterprise Roadmap",
+          allowed_domains: [`${user?.department} Documentation`, "Public Overviews"],
+          restricted_domains: ["Cross-Project Isolated Records"],
+          response_mode: "CLARIFICATION_REQUIRED",
+          policy_applied: "ABAC-INPUT-DISAMBIGUATION"
+        }
       });
     }
 
@@ -965,15 +1034,47 @@ export const mockBackend = {
     });
 
     // 9. Response Synthesis (Safe Insufficient Access Refusal vs. Grounded Answer)
+    const isForensicQuery = queryLower.includes("inc-sec-2026-89") || queryLower.includes("forensic");
+    let untrustedDetected = false;
+
     if (selectedDocs.length === 0) {
+      let boundaryAnswer = "I couldn't find sufficient accessible evidence in your authorized document clearance to answer this question. Please verify your department permissions or contact your system administrator.";
+      let appliedPolicy = "ABAC-CLEARANCE-BOUNDARY (SEC-POL-04)";
+
+      if (/revenue|forecast|financial|budget|p&l/i.test(queryLower)) {
+        boundaryAnswer = `I couldn't find sufficient accessible evidence in your authorized document clearance to answer that question. As a member of the ${user?.department || 'current'} department (${user?.clearance || 'Internal'} clearance), financial revenue forecasts and regional budget memos (such as DOC-101 and DOC-105) are restricted to the Finance department under Policy Rule SEC-POL-04.\n\nHere are some relevant topics in your authorized domain you can explore:\n• Marketing Campaign Roadmap & Brand Guidelines (DOC-MKT-001)\n• Customer Acquisition Analytics & Digital Engagement (DOC-MKT-002)\n• Company-wide HR Policies & PTO Entitlements (DOC-401)\n• Or ask to apply for leave or check your available leave balance.`;
+        appliedPolicy = "ABAC-DEPT-RESTRICTION (SEC-POL-04)";
+      } else if (/atlas/i.test(queryLower)) {
+        boundaryAnswer = `I couldn't find sufficient accessible evidence in your authorized document clearance to access Project Atlas documentation. Under Project Isolation Policy SEC-POL-07, Project Atlas cloud migration architecture (DOC-ENG-002) is strictly restricted to assigned engineers.\n\nYou are authorized to query documentation for your assigned project (Project Orion) or company-wide engineering coding standards (DOC-ENG-003).`;
+        appliedPolicy = "ABAC-PROJECT-ISOLATION (SEC-POL-07)";
+      } else if (/phoenix|acquisition|m&a|alpha/i.test(queryLower)) {
+        boundaryAnswer = `I couldn't find sufficient accessible evidence in your authorized document clearance to access Project Phoenix or acquisition plans. Strategic M&A dossiers and enterprise valuations are classified as Restricted and governed by C-Suite Executive Policy SEC-POL-03.`;
+        appliedPolicy = "ABAC-EXECUTIVE-CLEARANCE (SEC-POL-03)";
+      }
+
       return finishResponse({
         session_id: effectiveSessionId,
         request_id: requestId,
         status: "NO_AUTHORIZED_EVIDENCE",
         evidence_status: "NO_AUTHORIZED_EVIDENCE",
-        answer: `I do not have sufficient accessible evidence in your authorized document clearance to answer this question. Please verify your department permissions or contact your system administrator.`,
-        citations: []
+        answer: boundaryAnswer,
+        citations: [],
+        response_scope: {
+          user_name: user?.name,
+          user_department: user?.department,
+          user_clearance: user?.clearance,
+          requested_topic: query.slice(0, 45),
+          allowed_domains: [`${user?.department} Records`, "General Operations", "HR Policy DOC-401"],
+          restricted_domains: user?.clearance !== "Restricted" ? ["Restricted Executive M&A", "Finance Forecasts", "Confidential Compensation"] : [],
+          response_mode: "BOUNDARY_ALTERNATIVE",
+          policy_applied: appliedPolicy
+        }
       });
+    }
+
+    // Check for untrusted instruction inside documents (e.g. DOC-SEC-004 / INC-SEC-2026-89)
+    if (isForensicQuery || selectedDocs.some(d => d.doc_id === 'DOC-SEC-004' || (d.title && d.title.includes('INC-SEC-2026-89')))) {
+      untrustedDetected = true;
     }
 
     // Build Grounded Answer from Authorized Evidence
@@ -986,6 +1087,10 @@ export const mockBackend = {
       answerText = `Based on authorized records (${mainDoc.doc_id} v${mainDoc.version} - ${mainDoc.title}):\n\n${preview}`;
     } else {
       answerText = `Authorized document ${mainDoc.doc_id} (${mainDoc.title}) verified.`;
+    }
+
+    if (untrustedDetected) {
+      answerText += "\n\n[Security Shield Alert] Untrusted instruction detected in document content. The instruction was ignored.";
     }
 
     const citations = selectedDocs.slice(0, 3).map(d => ({
@@ -1002,7 +1107,18 @@ export const mockBackend = {
       status: "SUCCESS",
       evidence_status: "AUTHORIZED_EVIDENCE_USED",
       answer: answerText,
-      citations: citations
+      citations: citations,
+      untrusted_instruction_detected: untrustedDetected,
+      response_scope: {
+        user_name: user?.name,
+        user_department: user?.department,
+        user_clearance: user?.clearance,
+        requested_topic: query.slice(0, 45),
+        allowed_domains: [`${user?.department} Records`, "General Operations", "HR Policy DOC-401"],
+        restricted_domains: user?.clearance !== "Restricted" ? ["Restricted Executive M&A", "Confidential Compensation"] : [],
+        response_mode: "FULL_AUTHORIZED",
+        policy_applied: "ABAC-IDENTITY-MATCH (SEC-POL-01)"
+      }
     });
   },
 

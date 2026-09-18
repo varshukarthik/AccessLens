@@ -17,6 +17,7 @@ export default function AdminSidebar() {
 
   const links = [
     { name: 'Overview', path: '/admin', icon: LayoutDashboard, end: true },
+    { name: 'Policy Simulator', path: '/admin/simulator', icon: Sliders },
     { name: 'Security Inspector', path: '/admin/security-inspector', icon: Search },
     { name: 'Document Management', path: '/admin/documents', icon: Files },
     { name: 'Users & Roles', path: '/admin/users', icon: Users },
