@@ -261,7 +261,7 @@ export const api = {
       });
       return await handleResponse(res);
     } catch (err) {
-      return mockBackend.updateDocument(docData.id, docData);
+      return mockBackend.createDocument(docData);
     }
   },
 

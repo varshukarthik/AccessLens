@@ -455,6 +455,15 @@ function saveLeaveRequests(requests) {
   localStorage.setItem('nova_leave_requests_store', JSON.stringify(requests));
 }
 
+
+function saveStoredDocuments(docs) {
+  localStorage.setItem('nova_docs_store', JSON.stringify(docs));
+}
+
+function saveStoredUsers(users) {
+  localStorage.setItem('nova_users_store', JSON.stringify(users));
+}
+
 function getStoredDocuments() {
   const data = localStorage.getItem('nova_docs_store');
   let docs = [...INITIAL_DOCUMENTS];

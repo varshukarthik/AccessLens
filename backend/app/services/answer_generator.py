@@ -99,8 +99,13 @@ class AnswerGenerator:
             # If no sentences in the authorized evidence match the question keywords
             return SAFE_NO_ACCESS_MESSAGE
 
-        # Sort by relevance
-        matching_sentences.sort(key=lambda x: x["matches"], reverse=True)
+        # Sort by relevance: match count, presence of numeric data, non-header preference, and length
+        def score_match(m):
+            has_number = 1 if re.search(r'\d+', m["sentence"]) else 0
+            is_header = 1 if m["sentence"].startswith('#') else 0
+            return (m["matches"], has_number, -is_header, len(m["sentence"]))
+
+        matching_sentences.sort(key=score_match, reverse=True)
         top_match = matching_sentences[0]
 
         # Check if question asks for a specific fact/summary

@@ -360,16 +360,25 @@ def update_document(
 
 @router.delete("/documents/{id}")
 def delete_document(
-    id: int,
+    id: str,
     admin: User = Depends(get_current_admin_user),
     db: Session = Depends(get_db)
 ):
-    doc = db.query(Document).filter(Document.id == id).first()
+    doc = None
+    if id.isdigit():
+        doc = db.query(Document).filter(Document.id == int(id)).first()
+    if not doc:
+        doc = db.query(Document).filter(Document.doc_id == id.strip().upper()).first()
+    if not doc:
+        # Also try case-insensitive doc_id
+        doc = db.query(Document).filter(Document.doc_id.ilike(id.strip())).first()
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found.")
+    
     db.delete(doc)
     db.commit()
     return {"message": "Document deleted successfully."}
+
 
 # ==================== USER MANAGEMENT ====================
 

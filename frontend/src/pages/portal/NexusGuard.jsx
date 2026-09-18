@@ -534,35 +534,21 @@ export default function NexusGuard() {
                           )}
 
                           {m.citations && m.citations.length > 0 && (
-                            <div className="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-2">
-                              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1">
-                                <FileText className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-                                <span>Verified Citations ({m.citations.length})</span>
-                              </div>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                {m.citations.map((c, cIdx) => (
-                                  <div
-                                    key={cIdx}
-                                    onClick={() => handleOpenCitation(c)}
-                                    className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer transition text-xs space-y-1 group"
-                                  >
-                                    <div className="flex items-center justify-between">
-                                      <span className="font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 truncate">
-                                        {c.title}
-                                      </span>
-                                      <span className="font-mono text-[10px] px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded font-semibold">
-                                        {c.document_id}
-                                      </span>
-                                    </div>
-                                    <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between">
-                                      <span>v{c.version} • {c.effective_date}</span>
-                                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold group-hover:underline text-[10px]">
-                                        View Source →
-                                      </span>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
+                            <div className="pt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
+                              <span className="text-slate-400 dark:text-slate-500 text-[10px] font-medium mr-0.5">Sources:</span>
+                              {m.citations.map((c, cIdx) => (
+                                <button
+                                  key={cIdx}
+                                  type="button"
+                                  onClick={() => handleOpenCitation(c)}
+                                  className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/70 transition font-mono text-[10px] font-medium group cursor-pointer"
+                                  title={`${c.title} (v${c.version}) - Click to inspect excerpt`}
+                                >
+                                  <FileText className="w-3 h-3 text-slate-400 dark:text-slate-500 group-hover:text-emerald-500 transition" />
+                                  <span className="font-bold text-slate-900 dark:text-white">{c.document_id}</span>
+                                  <span className="text-slate-400 dark:text-slate-500 truncate max-w-[130px] font-sans">{c.title}</span>
+                                </button>
+                              ))}
                             </div>
                           )}
 

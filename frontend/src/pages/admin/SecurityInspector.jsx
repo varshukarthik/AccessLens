@@ -98,11 +98,11 @@ export default function SecurityInspector() {
 
         {/* Request Dropdown Selector */}
         <div className="flex items-center space-x-2">
-          <span className="text-xs font-semibold text-slate-600">Select Request:</span>
+          <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">Select Request:</span>
           <select
             value={selectedRequestId}
             onChange={(e) => handleSelectRequest(e.target.value)}
-            className="px-3.5 py-2 rounded-xl border border-slate-300 bg-white font-mono text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            className="px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
           >
             {auditLogs.map((log) => (
               <option key={log.request_id} value={log.request_id}>
@@ -114,15 +114,15 @@ export default function SecurityInspector() {
       </div>
 
       {loading ? (
-        <div className="p-16 text-center text-xs text-slate-400 animate-pulse bg-white rounded-3xl border border-slate-200">
+        <div className="p-16 text-center text-xs text-slate-400 animate-pulse bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
           Decompiling security trace for {selectedRequestId}...
         </div>
       ) : error ? (
-        <div className="p-8 bg-red-50 border border-red-200 rounded-3xl text-xs text-red-700">
+        <div className="p-8 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-3xl text-xs text-red-700 dark:text-red-300">
           {error}
         </div>
       ) : !traceData ? (
-        <div className="p-16 text-center text-xs text-slate-400 bg-white rounded-3xl border border-slate-200">
+        <div className="p-16 text-center text-xs text-slate-400 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
           Select an audit log request to inspect pipeline execution.
         </div>
       ) : (
@@ -131,27 +131,27 @@ export default function SecurityInspector() {
           {/* STEP 1 & 2: User Context & Query */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* User Security Context */}
-            <div className="lg:col-span-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-3">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5">
+            <div className="lg:col-span-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center space-x-1.5">
                 <User className="w-3.5 h-3.5 text-slate-500" />
                 <span>1. Authenticated User Context</span>
               </div>
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 dark:border-slate-800 space-y-2 text-xs">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-2 text-xs">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Employee ID</span>
-                  <span className="font-bold text-slate-900 font-mono">{traceData.user?.employee_id}</span>
+                  <span className="text-slate-500 dark:text-slate-400">Employee ID</span>
+                  <span className="font-bold text-slate-900 dark:text-white font-mono">{traceData.user?.employee_id}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Department</span>
-                  <span className="font-semibold text-slate-800">{traceData.user?.department}</span>
+                  <span className="text-slate-500 dark:text-slate-400">Department</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{traceData.user?.department}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Role</span>
-                  <span className="font-semibold text-slate-800">{traceData.user?.role}</span>
+                  <span className="text-slate-500 dark:text-slate-400">Role</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{traceData.user?.role}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Clearance</span>
-                  <span className="font-bold text-purple-700 font-mono bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                  <span className="text-slate-500 dark:text-slate-400">Clearance</span>
+                  <span className="font-bold text-purple-700 dark:text-purple-300 font-mono bg-purple-50 dark:bg-purple-950/50 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800">
                     {traceData.user?.clearance}
                   </span>
                 </div>
@@ -159,8 +159,8 @@ export default function SecurityInspector() {
             </div>
 
             {/* Query & Timing */}
-            <div className="lg:col-span-8 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-3">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+            <div className="lg:col-span-8 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center justify-between">
                 <div className="flex items-center space-x-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
                   <span>2. Employee Research Query</span>
@@ -181,25 +181,25 @@ export default function SecurityInspector() {
 
           {/* PIPELINE ARROW */}
           <div className="flex justify-center">
-            <div className="p-2 rounded-full bg-slate-200 text-slate-600">
+            <div className="p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
               <ArrowDown className="w-4 h-4" />
             </div>
           </div>
 
           {/* STEP 3 & 4: Candidate Retrieval & Deterministic Policy Gate */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8 space-y-5">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs p-6 sm:p-8 space-y-5">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 flex items-center space-x-1.5">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center space-x-1.5">
                   <Database className="w-3.5 h-3.5" />
                   <span>3. Candidate Retrieval & 4. Deterministic Authorization Gate</span>
                 </div>
-                <h3 className="font-bold text-slate-900 text-base mt-1">
+                <h3 className="font-bold text-slate-900 dark:text-white text-base mt-1">
                   Evaluated Candidate Documents ({traceData.authorization_decisions?.length || 0})
                 </h3>
               </div>
-              <div className="text-xs text-slate-500">
-                Rule: <span className="font-semibold text-slate-800">Clearance ≥ Classification & Dept/Role match</span>
+              <div className="text-xs text-slate-500 dark:text-slate-400">
+                Rule: <span className="font-semibold text-slate-800 dark:text-slate-200">Clearance ≥ Classification & Dept/Role match</span>
               </div>
             </div>
 
@@ -211,26 +211,26 @@ export default function SecurityInspector() {
                     key={idx}
                     className={`p-4 rounded-2xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs ${
                       isAllowed
-                        ? 'bg-emerald-50/60 border-emerald-200'
-                        : 'bg-red-50/60 border-red-200'
+                        ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60'
+                        : 'bg-red-50/60 dark:bg-red-950/30 border-red-200 dark:border-red-800/60'
                     }`}
                   >
                     <div className="space-y-1">
                       <div className="flex items-center space-x-2">
                         {isAllowed ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                         ) : (
-                          <XCircle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                          <XCircle className="w-4 h-4 text-red-600 dark:text-red-400 flex-shrink-0" />
                         )}
-                        <span className="font-bold text-slate-900">{dec.title}</span>
-                        <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-white text-slate-700 border">
+                        <span className="font-bold text-slate-900 dark:text-white">{dec.title}</span>
+                        <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border dark:border-slate-700">
                           {dec.doc_id}
                         </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold border bg-white">
+                        <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold border bg-white dark:bg-slate-800 dark:border-slate-700 text-slate-800 dark:text-slate-200">
                           {dec.classification}
                         </span>
                       </div>
-                      <div className="text-[11px] text-slate-600 pl-6">
+                      <div className="text-[11px] text-slate-600 dark:text-slate-400 pl-6">
                         {isAllowed 
                           ? 'Passed deterministic gate. Safe for LLM evidence envelope.' 
                           : 'BLOCKED from reaching LLM context or employee frontend.'}
@@ -248,7 +248,7 @@ export default function SecurityInspector() {
 
           {/* PIPELINE ARROW */}
           <div className="flex justify-center">
-            <div className="p-2 rounded-full bg-slate-200 text-slate-600">
+            <div className="p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
               <ArrowDown className="w-4 h-4" />
             </div>
           </div>
@@ -256,24 +256,24 @@ export default function SecurityInspector() {
           {/* STEP 5, 6, 7: Version Resolution & LLM Context Package */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Version Resolution */}
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 flex items-center space-x-1.5">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center space-x-1.5">
                 <Layers className="w-3.5 h-3.5" />
                 <span>5. Version & Lineage Resolution</span>
               </div>
               <h3 className="font-bold text-slate-900 dark:text-white text-sm">Authorized Effective Version</h3>
 
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 dark:border-slate-800 space-y-2 text-xs">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-2 text-xs">
                 <div className="flex justify-between font-semibold">
-                  <span className="text-slate-600">Selected Winner(s):</span>
-                  <span className="font-mono text-indigo-700">
+                  <span className="text-slate-600 dark:text-slate-400">Selected Winner(s):</span>
+                  <span className="font-mono text-indigo-700 dark:text-indigo-400">
                     {traceData.version_resolution?.selected_ids?.join(', ') || 'None (No authorized docs)'}
                   </span>
                 </div>
                 {traceData.version_resolution?.superseded_ids?.length > 0 && (
-                  <div className="flex justify-between text-slate-500 pt-1 border-t border-slate-200">
+                  <div className="flex justify-between text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-200 dark:border-slate-700">
                     <span>Superseded Prior Versions:</span>
-                    <span className="font-mono text-slate-600">
+                    <span className="font-mono text-slate-600 dark:text-slate-300">
                       {traceData.version_resolution.superseded_ids.join(', ')}
                     </span>
                   </div>
@@ -282,8 +282,8 @@ export default function SecurityInspector() {
             </div>
 
             {/* LLM Evidence Package */}
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-purple-600 flex items-center space-x-1.5">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center space-x-1.5">
                 <Lock className="w-3.5 h-3.5" />
                 <span>6. Sanitized LLM Evidence Package</span>
               </div>
@@ -292,18 +292,18 @@ export default function SecurityInspector() {
               </h3>
 
               {traceData.llm_evidence_package?.length === 0 ? (
-                <div className="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-amber-800">
+                <div className="p-4 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-300">
                   Zero documents approved. LLM prompt constructed with no-access safety instructions.
                 </div>
               ) : (
                 <div className="space-y-2">
                   {traceData.llm_evidence_package.map((item) => (
-                    <div key={item.doc_id} className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
-                      <div className="flex justify-between font-bold text-slate-900">
+                    <div key={item.doc_id} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs space-y-1">
+                      <div className="flex justify-between font-bold text-slate-900 dark:text-white">
                         <span>{item.title} ({item.doc_id})</span>
-                        <span className="font-mono text-[10px] text-slate-500">v{item.version}</span>
+                        <span className="font-mono text-[10px] text-slate-500 dark:text-slate-400">v{item.version}</span>
                       </div>
-                      <div className="text-[11px] text-slate-600 font-mono truncate">
+                      <div className="text-[11px] text-slate-600 dark:text-slate-300 font-mono truncate">
                         "{item.excerpt}"
                       </div>
                     </div>
@@ -315,41 +315,41 @@ export default function SecurityInspector() {
 
           {/* PIPELINE ARROW */}
           <div className="flex justify-center">
-            <div className="p-2 rounded-full bg-slate-200 text-slate-600">
+            <div className="p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
               <ArrowDown className="w-4 h-4" />
             </div>
           </div>
 
           {/* STEP 8: Final Employee Output */}
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8 space-y-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs p-6 sm:p-8 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 flex items-center space-x-1.5">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center space-x-1.5">
                   <Bot className="w-3.5 h-3.5" />
                   <span>7. Verified Employee Response & Citations</span>
                 </div>
-                <h3 className="font-bold text-slate-900 text-base mt-1">
+                <h3 className="font-bold text-slate-900 dark:text-white text-base mt-1">
                   Final Response Delivered to {traceData.user?.employee_id}
                 </h3>
               </div>
               <span className={`text-xs px-2.5 py-1 rounded-full font-bold border ${
                 traceData.response_status === 'SUCCESS' 
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
-                  : 'bg-amber-50 text-amber-700 border-amber-200'
+                  ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800' 
+                  : 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800'
               }`}>
                 {traceData.response_status}
               </span>
             </div>
 
-            <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200/80 text-xs sm:text-sm text-slate-800 leading-relaxed font-sans whitespace-pre-wrap">
+            <div className="p-5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-sans whitespace-pre-wrap">
               {traceData.answer || '(No response text available)'}
             </div>
 
             {traceData.citations?.length > 0 && (
               <div className="pt-2 flex items-center space-x-2 text-xs">
-                <span className="font-bold text-slate-600">Authorized Citations:</span>
+                <span className="font-bold text-slate-600 dark:text-slate-400">Authorized Citations:</span>
                 {traceData.citations.map((c, i) => (
-                  <span key={i} className="font-mono text-xs px-2 py-0.5 rounded bg-slate-200 text-slate-800 font-semibold">
+                  <span key={i} className="font-mono text-xs px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold border border-slate-300 dark:border-slate-700">
                     {c.document_id}
                   </span>
                 ))}

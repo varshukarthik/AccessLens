@@ -29,10 +29,13 @@ export default function AdminDocuments() {
   const [editingDoc, setEditingDoc] = useState(null);
 
   // Upload Form State
+  const [uploadTab, setUploadTab] = useState('file'); // 'file' | 'direct'
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadData, setUploadData] = useState({
+    doc_id: '',
     title: '',
     description: '',
+    content: '',
     classification: 'Internal',
     required_clearance: 'Internal',
     allowed_departments: 'Finance',
@@ -73,9 +76,12 @@ export default function AdminDocuments() {
 
   const handleOpenUpload = () => {
     setSelectedFile(null);
+    setUploadTab('file');
     setUploadData({
+      doc_id: '',
       title: '',
       description: '',
+      content: '',
       classification: 'Internal',
       required_clearance: 'Internal',
       allowed_departments: '',
@@ -105,35 +111,103 @@ export default function AdminDocuments() {
 
   const handleUploadSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedFile) {
-      setUploadError('Please select a file to upload (PDF, DOCX, TXT, MD).');
-      return;
-    }
-
     setUploading(true);
     setUploadError('');
 
     try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('title', uploadData.title);
-      formData.append('description', uploadData.description || '');
-      formData.append('classification', uploadData.classification);
-      formData.append('required_clearance', uploadData.required_clearance || uploadData.classification);
-      formData.append('allowed_departments', uploadData.allowed_departments);
-      formData.append('allowed_roles', uploadData.allowed_roles);
-      formData.append('explicit_denies', uploadData.explicit_denies);
-      formData.append('owner_department', uploadData.owner_department);
-      formData.append('version', uploadData.version);
-      formData.append('lineage_group', uploadData.lineage_group || uploadData.title);
-      formData.append('effective_date', uploadData.effective_date);
-      formData.append('status', uploadData.status);
+      if (uploadTab === 'file') {
+        if (!selectedFile) {
+          setUploadError('Please select a file to upload (PDF, DOCX, TXT, MD).');
+          setUploading(false);
+          return;
+        }
 
-      await api.uploadDocument(formData);
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('title', uploadData.title);
+        formData.append('description', uploadData.description || '');
+        formData.append('classification', uploadData.classification);
+        formData.append('required_clearance', uploadData.required_clearance || uploadData.classification);
+        formData.append('allowed_departments', uploadData.allowed_departments);
+        formData.append('allowed_roles', uploadData.allowed_roles);
+        formData.append('explicit_denies', uploadData.explicit_denies);
+        formData.append('owner_department', uploadData.owner_department);
+        formData.append('version', uploadData.version);
+        formData.append('lineage_group', uploadData.lineage_group || uploadData.title);
+        formData.append('effective_date', uploadData.effective_date);
+        formData.append('status', uploadData.status);
+
+        await api.uploadDocument(formData);
+      } else {
+        // Direct Entry Mode
+        if (!uploadData.title.trim()) {
+          setUploadError('Document title is required.');
+          setUploading(false);
+          return;
+        }
+        if (!uploadData.content.trim()) {
+          setUploadError('Document content cannot be empty.');
+          setUploading(false);
+          return;
+        }
+
+        const allowedDepts = uploadData.allowed_departments
+          ? uploadData.allowed_departments.split(',').map(s => s.trim()).filter(Boolean)
+          : [];
+        const allowedRoles = uploadData.allowed_roles
+          ? uploadData.allowed_roles.split(',').map(s => s.trim()).filter(Boolean)
+          : [];
+        const explicitDenies = uploadData.explicit_denies
+          ? uploadData.explicit_denies.split(',').map(s => s.trim()).filter(Boolean)
+          : [];
+
+        const autoId = uploadData.doc_id.trim() || `DOC-${Date.now().toString().slice(-4)}`;
+
+        try {
+          await api.createDocument({
+            doc_id: autoId,
+            title: uploadData.title.trim(),
+            description: uploadData.description.trim() || uploadData.content.slice(0, 150),
+            content: uploadData.content.trim(),
+            summary: uploadData.description.trim() || uploadData.content.slice(0, 150),
+            classification: uploadData.classification,
+            required_clearance: uploadData.required_clearance || uploadData.classification,
+            allowed_departments: allowedDepts,
+            allowed_roles: allowedRoles,
+            explicit_denies: explicitDenies,
+            owner_department: uploadData.owner_department,
+            version: uploadData.version,
+            lineage_group: uploadData.lineage_group || uploadData.title.trim().toUpperCase().replace(/\s+/g, '_'),
+            effective_date: uploadData.effective_date,
+            status: uploadData.status,
+            is_searchable: uploadData.status === 'ACTIVE'
+          });
+        } catch (apiErr) {
+          // Fallback: upload as a synthetic text file
+          const blob = new Blob([uploadData.content], { type: 'text/plain' });
+          const fileObj = new File([blob], `${autoId}.txt`, { type: 'text/plain' });
+          const formData = new FormData();
+          formData.append('file', fileObj);
+          formData.append('title', uploadData.title);
+          formData.append('description', uploadData.description || '');
+          formData.append('classification', uploadData.classification);
+          formData.append('required_clearance', uploadData.required_clearance || uploadData.classification);
+          formData.append('allowed_departments', uploadData.allowed_departments);
+          formData.append('allowed_roles', uploadData.allowed_roles);
+          formData.append('explicit_denies', uploadData.explicit_denies);
+          formData.append('owner_department', uploadData.owner_department);
+          formData.append('version', uploadData.version);
+          formData.append('lineage_group', uploadData.lineage_group || uploadData.title);
+          formData.append('effective_date', uploadData.effective_date);
+          formData.append('status', uploadData.status);
+          await api.uploadDocument(formData);
+        }
+      }
+
       setIsUploadModalOpen(false);
       loadDocuments();
     } catch (err) {
-      setUploadError(err.message || 'Failed to upload document');
+      setUploadError(err.message || 'Failed to save document');
     } finally {
       setUploading(false);
     }
@@ -180,10 +254,10 @@ export default function AdminDocuments() {
   const handleDelete = async (id, docId) => {
     if (confirm(`Are you sure you want to delete document ${docId}?`)) {
       try {
-        await api.deleteDocument(id);
+        await api.deleteDocument(id || docId);
         loadDocuments();
       } catch (err) {
-        alert(err.message);
+        alert(err.message || 'Failed to delete document');
       }
     }
   };
@@ -338,40 +412,95 @@ export default function AdminDocuments() {
               </div>
             )}
 
+            {/* Upload Method Switcher */}
+            <div className="flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-200 dark:border-slate-700">
+              <button
+                type="button"
+                onClick={() => setUploadTab('file')}
+                className={`flex-1 py-1.5 px-3 rounded-lg font-semibold text-xs transition flex items-center justify-center space-x-2 ${
+                  uploadTab === 'file'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <UploadCloud className="w-3.5 h-3.5" />
+                <span>Upload File (PDF / DOCX / TXT)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setUploadTab('direct')}
+                className={`flex-1 py-1.5 px-3 rounded-lg font-semibold text-xs transition flex items-center justify-center space-x-2 ${
+                  uploadTab === 'direct'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Direct Document Entry</span>
+              </button>
+            </div>
+
             <form onSubmit={handleUploadSubmit} className="space-y-4 text-xs">
-              {/* File Dropzone */}
-              <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Document File (PDF, DOCX, TXT, MD)</label>
-                <div 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500 rounded-2xl p-6 text-center cursor-pointer bg-slate-50 dark:bg-slate-800/50 hover:bg-indigo-50/20 transition space-y-2"
-                >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf,.docx,.txt,.md"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                  <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs flex items-center justify-center mx-auto text-indigo-600 dark:text-indigo-400">
-                    <FileText className="w-5 h-5" />
+              {uploadTab === 'file' ? (
+                /* File Dropzone */
+                <div>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Document File (PDF, DOCX, TXT, MD)</label>
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500 rounded-2xl p-6 text-center cursor-pointer bg-slate-50 dark:bg-slate-800/50 hover:bg-indigo-50/20 transition space-y-2"
+                  >
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".pdf,.docx,.txt,.md"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                    <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs flex items-center justify-center mx-auto text-indigo-600 dark:text-indigo-400">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    {selectedFile ? (
+                      <div>
+                        <div className="font-bold text-slate-900 dark:text-white text-xs">{selectedFile.name}</div>
+                        <div className="text-[11px] text-slate-500">{(selectedFile.size / 1024).toFixed(1)} KB</div>
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="font-semibold text-slate-700 dark:text-slate-300">Click to browse or drag and drop a file</div>
+                        <div className="text-[11px] text-slate-400">PDF, Microsoft Word (.docx), Plain Text (.txt), or Markdown (.md)</div>
+                      </div>
+                    )}
                   </div>
-                  {selectedFile ? (
-                    <div>
-                      <div className="font-bold text-slate-900 dark:text-white text-xs">{selectedFile.name}</div>
-                      <div className="text-[11px] text-slate-500">{(selectedFile.size / 1024).toFixed(1)} KB</div>
-                    </div>
-                  ) : (
-                    <div>
-                      <div className="font-semibold text-slate-700">Click to browse or drag and drop a file</div>
-                      <div className="text-[11px] text-slate-400">PDF, Microsoft Word (.docx), Plain Text (.txt), or Markdown (.md)</div>
-                    </div>
-                  )}
                 </div>
-              </div>
+              ) : (
+                /* Direct Entry Inputs */
+                <div className="space-y-3">
+                  <div>
+                    <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Custom Doc ID (Optional)</label>
+                    <input
+                      type="text"
+                      value={uploadData.doc_id}
+                      onChange={(e) => setUploadData({ ...uploadData, doc_id: e.target.value })}
+                      placeholder="e.g. DOC-501 (leave blank to auto-generate)"
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Document Content (Markdown / Text) *</label>
+                    <textarea
+                      rows="6"
+                      required
+                      value={uploadData.content}
+                      onChange={(e) => setUploadData({ ...uploadData, content: e.target.value })}
+                      placeholder="# Document Title&#10;&#10;Enter detailed enterprise documentation, policy guidelines, or financial data..."
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-mono text-xs leading-relaxed"
+                    />
+                  </div>
+                </div>
+              )}
 
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Document Title</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Document Title *</label>
                 <input
                   type="text"
                   required
@@ -486,7 +615,7 @@ export default function AdminDocuments() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsUploadModalOpen(false)}
@@ -500,7 +629,7 @@ export default function AdminDocuments() {
                   className="px-5 py-2 bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-700 text-white rounded-xl font-semibold disabled:opacity-50 flex items-center space-x-2"
                 >
                   <UploadCloud className="w-4 h-4" />
-                  <span>{uploading ? 'Extracting & Ingesting...' : 'Upload & Index'}</span>
+                  <span>{uploading ? 'Processing & Ingesting...' : (uploadTab === 'file' ? 'Upload & Index' : 'Save & Index Document')}</span>
                 </button>
               </div>
             </form>
@@ -512,20 +641,20 @@ export default function AdminDocuments() {
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-2xl w-full p-6 sm:p-8 space-y-6 my-8 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="font-bold text-slate-900 dark:text-white text-lg">
                 Edit Document Policy: {editingDoc?.doc_id}
               </h3>
               <button
                 onClick={() => setIsEditModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {editError && (
-              <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
+              <div className="p-3.5 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-xs text-red-700 dark:text-red-300">
                 {editError}
               </div>
             )}
@@ -608,7 +737,7 @@ export default function AdminDocuments() {
                 />
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}

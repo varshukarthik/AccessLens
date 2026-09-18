@@ -271,22 +271,22 @@ export default function AdminUsers() {
       {/* Create User Modal */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-xl w-full p-6 sm:p-8 space-y-6 my-8 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-xl w-full p-6 sm:p-8 space-y-6 my-8 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center space-x-2">
                 <UserPlus className="w-5 h-5 text-indigo-600" />
                 <h3 className="font-bold text-slate-900 dark:text-white text-lg">Enroll New Employee Identity</h3>
               </div>
               <button
                 onClick={() => setIsCreateModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {formError && (
-              <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-start space-x-2">
+              <div className="p-3.5 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-xs text-red-700 dark:text-red-300 flex items-start space-x-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <span>{formError}</span>
               </div>
@@ -407,14 +407,14 @@ export default function AdminUsers() {
                       type="checkbox"
                       checked={formData.is_admin}
                       onChange={(e) => setFormData({ ...formData, is_admin: e.target.checked })}
-                      className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
+                      className="w-4 h-4 text-indigo-600 rounded border-slate-300 dark:border-slate-700 focus:ring-indigo-500"
                     />
-                    <span className="font-semibold text-slate-800">Security Admin Privileges</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">Security Admin Privileges</span>
                   </label>
                 </div>
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
@@ -425,7 +425,7 @@ export default function AdminUsers() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold disabled:opacity-50 flex items-center space-x-2"
+                  className="px-5 py-2 bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-700 text-white rounded-xl font-semibold disabled:opacity-50 flex items-center space-x-2"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>{submitting ? 'Enrolling...' : 'Enroll Employee'}</span>
@@ -439,21 +439,21 @@ export default function AdminUsers() {
       {/* Edit User Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-xl w-full p-6 sm:p-8 space-y-6 my-8 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-xl w-full p-6 sm:p-8 space-y-6 my-8 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="font-bold text-slate-900 dark:text-white text-lg">
                 Edit Employee Attributes: {editingUser?.employee_id}
               </h3>
               <button
                 onClick={() => setIsEditModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {formError && (
-              <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
+              <div className="p-3.5 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-xs text-red-700 dark:text-red-300">
                 {formError}
               </div>
             )}
@@ -558,14 +558,14 @@ export default function AdminUsers() {
                       type="checkbox"
                       checked={formData.is_admin}
                       onChange={(e) => setFormData({ ...formData, is_admin: e.target.checked })}
-                      className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
+                      className="w-4 h-4 text-indigo-600 rounded border-slate-300 dark:border-slate-700 focus:ring-indigo-500"
                     />
-                    <span className="font-semibold text-slate-800">Security Admin Privileges</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">Security Admin Privileges</span>
                   </label>
                 </div>
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100">
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
@@ -578,7 +578,7 @@ export default function AdminUsers() {
                   disabled={submitting}
                   className="px-5 py-2 bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-700 text-white rounded-xl font-semibold disabled:opacity-50"
                 >
-                  {submitting ? 'Saving...' : 'Save User Attributes'}
+                  {submitting ? 'Saving Changes...' : 'Save Changes'}
                 </button>
               </div>
             </form>

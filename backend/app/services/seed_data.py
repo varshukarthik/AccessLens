@@ -138,7 +138,7 @@ def seed_database(db: Session):
                 doc_id="DOC-302",
                 title="Q4 Forecast",
                 description="Revised effective Q4 forecast of 125 crore superseding version 1.0.",
-                content="Q4 forecast is 125 crore revised projection incorporating updated enterprise customer retention figures and contract expansions.",
+                content="The latest Q4 forecast is 125 crore revised projection incorporating updated enterprise customer retention figures and contract expansions.",
                 summary="Revised effective Q4 forecast of 125 crore superseding version 1.0.",
                 classification="Internal",
                 required_clearance="Internal",

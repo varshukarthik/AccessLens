@@ -150,16 +150,16 @@ export default function AdminPolicies() {
       {/* Policy Matrix Specs */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Classification Hierarchy */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
           <h3 className="font-bold text-slate-900 dark:text-white text-sm">Classification Hierarchy</h3>
           <div className="space-y-2">
             {policyData?.classification_hierarchy?.map((lvl) => (
-              <div key={lvl.name} className="p-3 rounded-xl bg-slate-50 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+              <div key={lvl.name} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
                 <div>
-                  <span className="font-bold text-slate-900">{lvl.name}</span>
-                  <p className="text-[11px] text-slate-500">{lvl.description}</p>
+                  <span className="font-bold text-slate-900 dark:text-white">{lvl.name}</span>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">{lvl.description}</p>
                 </div>
-                <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-700">
+                <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
                   Level {lvl.level}
                 </span>
               </div>
@@ -168,13 +168,13 @@ export default function AdminPolicies() {
         </div>
 
         {/* Reason Codes */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
           <h3 className="font-bold text-slate-900 dark:text-white text-sm">Deterministic Reason Codes</h3>
           <div className="space-y-2">
             {policyData?.reason_codes?.map((rc) => (
-              <div key={rc.code} className="p-3 rounded-xl bg-slate-50 border border-slate-100 dark:border-slate-800 space-y-0.5 text-xs">
-                <span className="font-mono font-bold text-purple-700 text-[11px]">{rc.code}</span>
-                <p className="text-[11px] text-slate-500">{rc.description}</p>
+              <div key={rc.code} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-0.5 text-xs">
+                <span className="font-mono font-bold text-purple-700 dark:text-purple-300 text-[11px]">{rc.code}</span>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">{rc.description}</p>
               </div>
             ))}
           </div>
