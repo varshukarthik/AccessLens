@@ -1,6 +1,7 @@
-import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
 import { 
   ShieldCheck, 
   Sparkles, 
@@ -12,11 +13,34 @@ import {
   Activity,
   Settings,
   Play,
-  FileText
+  FileText,
+  MessageSquare,
+  Plus
 } from 'lucide-react';
 
 export default function PortalSidebar() {
   const { user } = useAuth();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const [sessions, setSessions] = useState([]);
+  const activeSessionId = searchParams.get('session');
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchSessions = async () => {
+      try {
+        const data = await api.getSessions();
+        setSessions(data || []);
+      } catch (err) {
+        // silent fallback
+      }
+    };
+    fetchSessions();
+
+    const handleUpdate = () => fetchSessions();
+    window.addEventListener('nexusguard:session_updated', handleUpdate);
+    return () => window.removeEventListener('nexusguard:session_updated', handleUpdate);
+  }, [user, location.pathname]);
 
   const links = [
     { name: 'Workspace', path: '/portal/dashboard', icon: LayoutDashboard },
@@ -32,7 +56,7 @@ export default function PortalSidebar() {
 
   return (
     <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between flex-shrink-0 min-h-screen transition-colors duration-200">
-      <div>
+      <div className="flex-1 overflow-y-auto">
         <div className="p-5 border-b border-slate-100 dark:border-slate-800">
           <Link to="/" className="flex items-center space-x-2.5">
             <div className="w-8 h-8 rounded-xl bg-slate-900 dark:bg-emerald-600 flex items-center justify-center text-white font-bold shadow-xs">
@@ -86,6 +110,48 @@ export default function PortalSidebar() {
             );
           })}
         </nav>
+
+        {/* Recent Conversations below Settings */}
+        <div className="px-3 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-1">
+          <div className="flex items-center justify-between px-3 py-1">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              Recent Conversations
+            </span>
+            <Link
+              to="/portal/nexusguard"
+              className="p-1 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              title="Start New Chat"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="space-y-0.5 max-h-52 overflow-y-auto pr-1">
+            {sessions.length === 0 ? (
+              <div className="px-3 py-2 text-[11px] text-slate-400 dark:text-slate-500 italic">
+                No conversations yet
+              </div>
+            ) : (
+              sessions.slice(0, 8).map((s) => {
+                const isActive = location.pathname === '/portal/nexusguard' && activeSessionId === s.session_id;
+                return (
+                  <Link
+                    key={s.session_id}
+                    to={`/portal/nexusguard?session=${s.session_id}`}
+                    className={`group flex items-center space-x-2 px-3 py-1.5 rounded-xl text-xs transition ${
+                      isActive
+                        ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-semibold border border-emerald-200 dark:border-emerald-800'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60'
+                    }`}
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 flex-shrink-0" />
+                    <span className="truncate flex-1 text-[11px]">{s.title || 'Untitled Chat'}</span>
+                  </Link>
+                );
+              })
+            )}
+          </div>
+        </div>
 
         {user?.is_admin && (
           <div className="px-3 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-1">
