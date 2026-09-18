@@ -89,7 +89,7 @@ const INITIAL_DOCUMENTS = [
     doc_id: "DOC-101",
     title: "Q4 Revenue Forecast",
     description: "Standard departmental Q4 revenue projection of 120 crore.",
-    content: "Q4 revenue forecast is 120 crore based on validated enterprise customer subscription renewals and finance department financial models.",
+    content: "Q4 Revenue Forecast (Finance Department, v2.0 — September 2026).\n\nThe validated Q4 revenue forecast for Nova Solutions is ₹120 crore, based on confirmed enterprise customer subscription renewals and finance department financial models.\n\nThis figure incorporates data from all active enterprise accounts, regional subscription pipelines, and locked-in contract expansions. The forecast reflects validated figures reviewed by the Finance Controller.\n\nKey drivers include ₹48 crore from existing SaaS renewals, ₹32 crore from new enterprise onboarding in Q4, and ₹40 crore from multi-year contract expansions confirmed in August 2026.\n\nThis document is classified Internal and restricted to Finance department personnel only.",
     summary: "Standard finance departmental Q4 revenue projection of 120 crore.",
     classification: "Internal",
     required_clearance: "Internal",
@@ -108,7 +108,7 @@ const INITIAL_DOCUMENTS = [
     doc_id: "DOC-201",
     title: "Q4 Revenue Forecast",
     description: "Executive restricted Q4 forecast of 145 crore with non-public strategic data.",
-    content: "Q4 revenue forecast is 145 crore including confidential non-public strategic acquisitions, high-risk executive projections, and inorganic expansion targets.",
+    content: "Q4 Revenue Forecast — Executive Restricted (Board Strategy, v3.0 — September 2026).\n\nThe board-approved Q4 2026 stretch revenue target is ₹145 crore, reflecting confidential inorganic expansion plans and non-public strategic acquisitions under evaluation.\n\nThis figure includes ₹120 crore from standard enterprise operations plus ₹25 crore from strategic initiatives not yet disclosed to staff, including Project Atlas acquisition synergies and a planned Series-D secondary capital event.\n\nThis document is RESTRICTED and accessible only to the Executive team, CEO, and Security Officers. Its contents must not be disclosed to any other department.",
     summary: "Executive restricted Q4 forecast of 145 crore with non-public strategic data.",
     classification: "Restricted",
     required_clearance: "Restricted",
@@ -127,7 +127,7 @@ const INITIAL_DOCUMENTS = [
     doc_id: "DOC-301",
     title: "Q4 Forecast",
     description: "Initial mid-year Q4 financial baseline estimate of 110 crore.",
-    content: "Q4 forecast is 110 crore baseline projection as calculated during mid-year budget planning.",
+    content: "Q4 Financial Baseline Estimate (Finance, v1.0 — June 2026).\n\nThe initial Q4 forecast is ₹110 crore, calculated during mid-year budget planning in June 2026. This baseline assumed NexusGuard launch in September and standard SaaS renewal rates.\n\nThis version has been superseded by the revised Q4 Forecast v2.0 (DOC-302, effective September 2026) which reflects updated enterprise retention data and contract expansions.\n\nFigures in this document should not be used for planning without cross-referencing the latest version.",
     summary: "Initial mid-year Q4 financial baseline estimate of 110 crore.",
     classification: "Internal",
     required_clearance: "Internal",
@@ -146,7 +146,7 @@ const INITIAL_DOCUMENTS = [
     doc_id: "DOC-302",
     title: "Q4 Forecast",
     description: "Revised effective Q4 forecast of 125 crore superseding version 1.0.",
-    content: "Q4 forecast is 125 crore revised projection incorporating updated enterprise customer retention figures and contract expansions.",
+    content: "Q4 Revenue Forecast v2.0 — Revised (Finance, September 2026).\n\nThe latest Q4 forecast is ₹125 crore, revised upward from the June baseline of ₹110 crore. This revision incorporates updated enterprise customer retention figures and confirmed contract expansions closed in Q3.\n\nKey revisions: NexusGuard AI Suite launched ahead of schedule in August 2026, contributing an additional ₹6.5 crore in Q3 and boosting Q4 projections. Singapore bookings exceeded targets by 18%.\n\nThis document supersedes Q4 Forecast v1.0 (DOC-301, effective June 2026). The ₹125 crore figure is the authoritative Q4 projection as of September 2026.",
     summary: "Revised effective Q4 forecast of 125 crore superseding version 1.0.",
     classification: "Internal",
     required_clearance: "Internal",
@@ -165,7 +165,7 @@ const INITIAL_DOCUMENTS = [
     doc_id: "DOC-105",
     title: "Regional Budget Allocation & Expense Control Memo",
     description: "Financial guidelines for Q4 regional operating expenses.",
-    content: "Operating budget for regional expansion: North America ₹42 Cr, EMEA ₹38 Cr, APAC ₹30 Cr. Cost optimization targets mandate a 12% reduction in non-essential vendor licenses.",
+    content: "Regional Budget Allocation & Expense Control Memo (Finance, Q4 2026).\n\nOperating budget for Q4 regional expansion: North India ₹42 crore, EMEA ₹38 crore, APAC ₹30 crore.\n\nCost optimization targets mandate a 12% reduction in non-essential vendor licenses across all regions. Department heads must submit revised vendor contracts to Finance by 15 October 2026.\n\nCapital expenditures above ₹5 lakh per region require CFO approval. Travel expenses are capped per the Travel & Expense Policy (DOC-1012). Cloud infrastructure spend is being monitored weekly due to Project Phoenix dual-running costs.",
     summary: "Financial guidelines for Q4 regional operating expenses.",
     classification: "Internal",
     required_clearance: "Internal",
@@ -183,8 +183,8 @@ const INITIAL_DOCUMENTS = [
     id: 6,
     doc_id: "DOC-401",
     title: "Employee Travel & Expense Policy 2026",
-    description: "Standard travel guidelines and per diem rates.",
-    content: "All employees traveling for business must book economy class for flights under 6 hours. Per diem meal allowance is $75 per day. Expenses exceeding $500 require prior manager approval.",
+    description: "Standard travel guidelines and per diem rates for all Nova Solutions employees.",
+    content: "Travel & Expense Policy 2026 (Finance / HR, v3.1 — effective 1 April 2026).\n\nBusiness travel must be pre-approved by your manager through the NexusGuard workspace. Domestic flights must be economy class. International flights over 8 hours may be premium economy with VP-level approval.\n\nHotel limits: ₹7,500 per night in metro cities (Mumbai, Delhi, Bengaluru, Hyderabad); ₹5,000 per night elsewhere. Daily meal allowance is ₹1,500 for domestic travel.\n\nExpense claims must be submitted within 30 days of the trip with original receipts. Claims above ₹25,000 require department-head countersignature.\n\nPersonal travel booked alongside business travel must be clearly separated and is not reimbursable. Cab receipts up to ₹500 per day are reimbursable without manager approval.",
     summary: "Standard travel policy guidelines and reimbursement rates.",
     classification: "Internal",
     required_clearance: "Internal",
@@ -201,10 +201,10 @@ const INITIAL_DOCUMENTS = [
   {
     id: 7,
     doc_id: "DOC-402",
-    title: "Employee Remote Work & Leave Guidelines 2026",
-    description: "Corporate policies on flexible work schedules, paid time off, and parental leave.",
-    content: "Employees are eligible for 24 days annual paid time off plus 12 regional public holidays. Core collaboration hours are 10:00 AM to 4:00 PM local time. Remote equipment stipends are renewed annually.",
-    summary: "Corporate policies on flexible work schedules and PTO.",
+    title: "Leave Policy 2026",
+    description: "Corporate policies on leave entitlements, flexible work, and parental leave for all employees.",
+    content: "Leave Policy 2026 (Human Resources, v2026.1 — effective 1 January 2026).\n\nThis policy replaces Leave Policy 2025 and applies from 1 January 2026 to all full-time Nova Solutions employees.\n\nCasual leave: employees are entitled to 12 casual leaves per calendar year, credited on 1 January. Casual leave cannot be carried forward and may be taken in half-day units.\n\nSick leave: employees are entitled to 10 sick leaves per year. A medical certificate is required for more than 2 consecutive days of sick leave.\n\nEarned leave: employees accrue 18 earned leaves per year (1.5 per month). Up to 12 unused earned leaves may be carried forward to the next year.\n\nRequesting leave: casual and earned leave must be requested through the NexusGuard workspace at least 2 working days in advance. Your reporting manager approves or rejects the request. Sick leave may be requested on the same day.\n\nParental leave: 26 weeks of maternity leave and 4 weeks of paternity leave, in line with applicable law.",
+    summary: "Leave entitlements: 12 casual, 10 sick, 18 earned leaves per year with 2-day advance notice required.",
     classification: "Internal",
     required_clearance: "Internal",
     allowed_departments: [],
@@ -221,8 +221,8 @@ const INITIAL_DOCUMENTS = [
     id: 8,
     doc_id: "DOC-501",
     title: "Q4 Global Brand Marketing Campaign Strategy",
-    description: "Strategic marketing roadmap and digital campaign allocation for Q4.",
-    content: "The Q4 marketing campaign focuses on enterprise knowledge security and AI governance, allocating $2.5M to digital thought leadership, partner webinars, and major technology summits.",
+    description: "Strategic marketing roadmap and digital campaign allocation for Q4 2026.",
+    content: "Q4 2026 Brand Marketing Campaign Strategy (Marketing, v1.0 — effective 15 August 2026).\n\nThe Q4 marketing campaign focuses on enterprise knowledge security and AI governance, positioning NexusGuard as the leading secure AI workspace for mid-market enterprises.\n\nBudget allocation: ₹2.5 crore total — ₹1.0 crore for digital thought leadership (whitepapers, case studies), ₹0.8 crore for partner webinars and industry summits, ₹0.7 crore for social media and SEO campaigns.\n\nKey markets: India (primary), Singapore (expansion), UK (awareness pre-launch). Target reach is 8,000 qualified enterprise decision-makers in Q4.\n\nCampaign performance is tracked weekly against MQL targets. All external content must be reviewed by Marketing before publication per Brand Guidelines (DOC-1017).",
     summary: "Strategic marketing roadmap and digital campaign allocation for Q4.",
     classification: "Internal",
     required_clearance: "Internal",
@@ -241,8 +241,8 @@ const INITIAL_DOCUMENTS = [
     doc_id: "DOC-502",
     title: "Customer Segmentation & Lead Generation Strategy",
     description: "Analysis of high-value enterprise accounts and inbound conversion channels.",
-    content: "Target customer segments comprise Fortune 500 banks, healthcare networks, and logistics providers. Inbound conversion target is set at 450 enterprise qualified leads for Q4.",
-    summary: "Customer segmentation and inbound target metrics.",
+    content: "Customer Segmentation & Lead Generation Strategy (Marketing, v1.1 — September 2026).\n\nTarget customer segments for Q4 2026: Fortune 500 financial institutions, healthcare networks, and logistics providers with 500+ employees across India and Singapore.\n\nInbound conversion target: 450 enterprise qualified leads (MQLs) for Q4, converting at an assumed 12% rate to SQLs. Pipeline value target is ₹180 crore.\n\nTop channels: organic search (35%), LinkedIn paid campaigns (28%), industry events (22%), referrals (15%). The NexusGuard AI security demo is the highest-converting asset at 31% MQL-to-demo rate.\n\nAccount-based marketing is prioritized for the top 50 target accounts in BFSI and healthcare verticals.",
+    summary: "Customer segmentation and inbound target metrics: 450 MQLs targeted for Q4.",
     classification: "Internal",
     required_clearance: "Internal",
     allowed_departments: ["Marketing"],
@@ -258,10 +258,10 @@ const INITIAL_DOCUMENTS = [
   {
     id: 10,
     doc_id: "DOC-601",
-    title: "Project Aegis Architecture & Security Standards",
+    title: "NexusGuard Architecture & Security Standards",
     description: "Technical security blueprint and compliance standards for internal software systems.",
-    content: "All internal Nova Solutions microservices must enforce TLS 1.3, mutual certificate authentication, and pre-LLM deterministic authorization gates. Direct database access from frontend clients is strictly prohibited.",
-    summary: "Technical security blueprint and compliance standards for internal software systems.",
+    content: "NexusGuard Architecture & Security Standards v2.4 (Security / Engineering, effective 10 July 2026).\n\nAll Nova Solutions microservices must enforce TLS 1.3 with mutual certificate authentication. Direct database access from frontend clients is strictly prohibited — all requests must pass through the API gateway and authentication middleware.\n\nPre-LLM deterministic authorization gates are mandatory: every AI query must pass ABAC policy evaluation before any document content is loaded into context. Unauthorized document content must never reach the model.\n\nPrompt injection scanning is required on all user inputs and retrieved document chunks. DLP (Data Loss Prevention) must redact PAN, Aadhaar, bank account numbers, and credit card numbers from AI responses.\n\nAll API endpoints must be rate-limited to prevent DDoS attacks. Rate limits: 60 requests per minute for standard users, 120 for admins. Automated lockout triggers at 5 failed authentication attempts.",
+    summary: "Technical security blueprint: TLS 1.3, ABAC gates, prompt injection scanning, DLP, and rate limiting.",
     classification: "Confidential",
     required_clearance: "Confidential",
     allowed_departments: ["Security", "Engineering"],
@@ -277,10 +277,10 @@ const INITIAL_DOCUMENTS = [
   {
     id: 11,
     doc_id: "DOC-602",
-    title: "Helix Cloud Migration Deployment Schedule",
-    description: "Detailed milestone schedule for core microservices cloud migration.",
-    content: "Helix platform cluster migration to multi-region Kubernetes is scheduled for Q4 release. Target latency SLO is sub-25ms for p95 requests. Rollback procedures are verified and automated.",
-    summary: "Milestone schedule for core cloud infrastructure.",
+    title: "Project Phoenix — Cloud Migration Schedule",
+    description: "Detailed milestone schedule for core microservices cloud migration to Kubernetes.",
+    content: "Project Phoenix Cloud Migration Schedule (Engineering, v1.0 — effective 20 August 2026).\n\nProject Phoenix is the migration of Nova Solutions' core platform to multi-region Kubernetes. Current status: 72% complete, health Amber.\n\nDatabase cut-over slipped two weeks to 12 October 2026 due to a storage driver compatibility issue. Mitigation is in place and production traffic remains unaffected.\n\nTarget latency SLO: sub-25ms for p95 requests. Current p95 latency in staging is 18ms — on track. Rollback procedures are automated and tested.\n\nPhoenix is causing dual-running cloud costs, currently 6% over the FY26 engineering budget. Cost is expected to normalize after cut-over completes in October.",
+    summary: "Kubernetes migration: 72% complete, cut-over 12 October 2026, cloud costs 6% over budget.",
     classification: "Internal",
     required_clearance: "Internal",
     allowed_departments: ["Engineering", "Operations"],
@@ -296,10 +296,10 @@ const INITIAL_DOCUMENTS = [
   {
     id: 12,
     doc_id: "DOC-701",
-    title: "Project Phoenix - Confidential Acquisition Brief",
-    description: "Confidential M&A evaluation dossier for Project Phoenix.",
-    content: "Strategic acquisition memorandum for target entity codenamed Phoenix. Preliminary enterprise valuation estimated at $85M subject to final board audit and regulatory clearance.",
-    summary: "Confidential M&A evaluation dossier for Project Phoenix.",
+    title: "Project Atlas — Confidential Acquisition Memo",
+    description: "Confidential M&A evaluation dossier for Project Atlas.",
+    content: "Project Atlas — Acquisition Memo (Executive, RESTRICTED, v0.9 — 30 August 2026).\n\nNova Solutions is evaluating the acquisition of an AI observability start-up under the codename Project Atlas. The indicative valuation range is ₹380–420 crore based on preliminary due diligence.\n\nDue diligence runs through October 2026. A term sheet is targeted for November 2026 with board approval expected in December.\n\nThis memo is RESTRICTED to Executive leadership and Legal. It must not be shared with any other employees or external parties. Any unauthorized disclosure will be treated as a serious breach of confidentiality.\n\nDeal rationale: acquiring Atlas's observability technology would accelerate NexusGuard's AI monitoring capabilities by 18 months.",
+    summary: "Restricted M&A memo: evaluating AI start-up acquisition at ₹380–420 crore valuation.",
     classification: "Restricted",
     required_clearance: "Restricted",
     allowed_departments: [],
@@ -313,12 +313,12 @@ const INITIAL_DOCUMENTS = [
     is_searchable: true
   },
   {
-    id: 11,
-    doc_id: "DOC-401",
-    title: "HR Leave and Paid Time Off (PTO) Policy",
-    description: "Standard workplace leave policies, entitlements, and approval rules for all full-time Nova Solutions employees.",
-    content: "Nova Solutions Leave & Paid Time Off (PTO) Policy:\n1. Standard Annual Entitlement: All full-time employees are allocated 18 to 25 days of paid annual/casual leave per fiscal year.\n2. Application Procedure: Leave must be submitted through NexusGuard or the Nova Workplace Portal at least 48 hours prior to planned absence.\n3. Approval Chain: All leave requests require managerial review and electronic authorization by the designated direct supervisor/manager.\n4. Self-Approval Prohibition: Employees and managers are strictly barred from approving their own leave requests under Section 4.2 of Governance Rules. Direct manager or executive countersignature is required.\n5. Consecutive Leave: Consecutive leaves exceeding 10 business days require departmental director or HR VP approval.",
-    summary: "Standard workplace leave policy detailing 18-25 days PTO, managerial approval workflows, and strict prohibition of self-approval.",
+    id: 13,
+    doc_id: "DOC-HR-LEAVE",
+    title: "Nova Solutions Employee Leave and Attendance Policy",
+    description: "Comprehensive guidelines governing annual casual, sick, personal time-off, and manager approval hierarchy.",
+    content: "Nova Solutions Employee Leave & Attendance Policy (HR, v1.0 — effective 1 September 2026).\n\nAll active Nova Solutions employees receive 18 days of standard annual paid leave per calendar year. Casual leave: 12 days per year, credited on 1 January, cannot be carried forward.\n\nLeave requests must be submitted through the NexusGuard enterprise assistant at least 2 working days in advance for casual/earned leave. Sick leave may be applied on the day of absence.\n\nAll submissions are deterministically routed to the employee's direct manager for approval. Self-approval of leave requests is strictly forbidden under corporate governance regulations — Section 4.2 of HR Policy.\n\nOverlapping leave requests and requests exceeding available balances are automatically blocked. Consecutive leaves exceeding 10 business days require HR VP approval.",
+    summary: "Leave policy: 18 days annual leave, 2-day advance notice, strict no self-approval rule.",
     classification: "Internal",
     required_clearance: "Internal",
     allowed_departments: [],
@@ -988,15 +988,62 @@ export const mockBackend = {
       });
     }
 
-    // 5. Candidate Retrieval (Keyword Matching)
-    const tokens = queryLower.split(/\s+/).filter(t => t.length > 2);
-    const candidates = docs.filter(d => {
-      if (!d.is_searchable) return false;
-      const text = `${d.title} ${d.content} ${d.description} ${d.doc_id}`.toLowerCase();
-      return (d.doc_id && d.doc_id.toLowerCase().includes(queryLower)) ||
-             (d.title && d.title.toLowerCase().includes(queryLower)) ||
-             tokens.some(tok => text.includes(tok));
-    });
+    // 5. Candidate Retrieval (Scored Relevance with MIN_SCORE threshold)
+    // Ported from p14-aegis: only include documents with sufficient overlap.
+    // This prevents "PAN → DOC-201" type bugs where unrelated docs are returned.
+    const STOP_WORDS = new Set(['a','an','the','is','are','was','were','what','which','who','whom',
+      'this','that','these','those','in','on','at','to','for','of','with','by','from','about',
+      'me','my','you','your','can','could','should','would','do','does','did','and','or','it',
+      'be','been','being','have','has','had','will','shall','may','might','must','tell','show',
+      'get','give','find','please','let','know','need','want','see','how','when','where','why']);
+    const SYNONYMS_MAP = {
+      'wfh': ['work','home','remote'], 'remote': ['wfh','home'],
+      'pto': ['leave','vacation'], 'vacation': ['leave'], 'holiday': ['leave'],
+      'salary': ['compensation','pay'], 'pay': ['compensation'],
+      'forecast': ['projection','projected'], 'revenue': ['financial','finance'],
+      'travel': ['expense','trip'], 'expense': ['travel','reimbursement'],
+      'ticket': ['helpdesk','support'], 'cafeteria': ['canteen','lunch'],
+      'canteen': ['cafeteria'], 'wfh': ['work','home','remote'],
+    };
+    function stemWord(t) {
+      for (const suf of ['ing','ies','es','ed','s']) {
+        if (t.length > 4 && t.endsWith(suf)) return t.slice(0, -suf.length) + (suf === 'ies' ? 'y' : '');
+      }
+      return t;
+    }
+    function tokenizeQ(text) {
+      const base = (text.toLowerCase().match(/[a-z0-9&]+/g) || []);
+      const toks = [];
+      for (const t of base) {
+        if (!STOP_WORDS.has(t) && t.length > 1) {
+          const stem = stemWord(t);
+          toks.push(stem);
+          for (const s of (SYNONYMS_MAP[t] || [])) toks.push(stemWord(s));
+        }
+      }
+      return toks;
+    }
+    const qTokens = tokenizeQ(queryLower);
+    function scoreDoc(d) {
+      if (!d.is_searchable) return 0;
+      if (d.doc_id && queryLower.includes(d.doc_id.toLowerCase())) return 100;
+      if (d.title && (d.title.toLowerCase().includes(queryLower) || queryLower.includes(d.title.toLowerCase()))) return 60;
+      const dTokens = new Set(tokenizeQ(`${d.title} ${d.content || ''} ${d.description || ''}`));
+      const dTitleToks = new Set(tokenizeQ(d.title || ''));
+      let overlap = 0;
+      for (const tok of qTokens) { if (dTokens.has(tok)) overlap++; }
+      let titleOverlap = 0;
+      for (const tok of qTokens) { if (dTitleToks.has(tok)) titleOverlap++; }
+      return overlap + titleOverlap * 2;
+    }
+    const MIN_SCORE_THRESHOLD = 2;
+    const scoredDocs = docs.map(d => ({ doc: d, score: scoreDoc(d) }))
+      .filter(x => x.score >= MIN_SCORE_THRESHOLD)
+      .sort((a, b) => b.score - a.score);
+    const bestScore = scoredDocs.length > 0 ? scoredDocs[0].score : 0;
+    const candidates = bestScore > 0
+      ? scoredDocs.filter(x => x.score >= Math.max(MIN_SCORE_THRESHOLD, bestScore * 0.45)).slice(0, 8).map(x => x.doc)
+      : [];
 
     // 6. Pre-LLM Deterministic Authorization Gate
     const decisions = [];
@@ -1086,20 +1133,69 @@ export const mockBackend = {
       untrustedDetected = true;
     }
 
-    // Build Grounded Answer from Authorized Evidence
-    let answerText = "";
+    // Build Grounded Answer from Authorized Evidence (p14-aegis composer style)
+    // Split content into sentences, score each against the query, return the best matches.
+    function splitSentences(text) {
+      if (!text) return [];
+      return text.split(/\n+/).flatMap(line => {
+        line = line.trim().replace(/^[-•*\t ]+/, '');
+        if (!line || line.length < 3) return [];
+        return line.split(/(?<=[.!?])\s+(?=[A-Z0-9₹])/).map(s => s.trim()).filter(s => s.length > 2);
+      });
+    }
+
+    function scoreSentence(sentence, qToks) {
+      const sToks = new Set(tokenizeQ(sentence));
+      if (sToks.size === 0 || sentence.length < 28) return -1;
+      let overlap = 0;
+      for (const t of qToks) { if (sToks.has(t)) overlap++; }
+      let s = overlap / (Math.sqrt(qToks.length) + 0.1);
+      if (/\d/.test(sentence)) s += 0.35;
+      if (sentence.endsWith(':')) s -= 0.4;
+      return s;
+    }
+
+    function bestSentences(query, docs, n = 3) {
+      const qToks = tokenizeQ(query);
+      const pool = [];
+      for (const d of docs) {
+        const sents = splitSentences(d.content || '');
+        sents.forEach((s, i) => {
+          pool.push({ score: scoreSentence(s, qToks) - i * 0.005, sentence: s, doc: d });
+        });
+      }
+      pool.sort((a, b) => b.score - a.score);
+      const top = pool.length > 0 ? pool[0].score : 0;
+      const seen = new Set();
+      const out = [];
+      for (const { score, sentence, doc } of pool) {
+        if (score <= 0.15 || score < 0.5 * top || seen.has(sentence)) continue;
+        seen.add(sentence);
+        out.push({ sentence, doc });
+        if (out.length >= n) break;
+      }
+      return out;
+    }
+
+    let answerText = '';
     const mainDoc = selectedDocs[0];
-    if (mainDoc.summary && mainDoc.summary.length > 30) {
-      answerText = `Based on authorized records (${mainDoc.doc_id} v${mainDoc.version} - ${mainDoc.title}):\n\n${mainDoc.summary}`;
-    } else if (mainDoc.content) {
-      const preview = mainDoc.content.length > 450 ? mainDoc.content.slice(0, 450) + "..." : mainDoc.content;
-      answerText = `Based on authorized records (${mainDoc.doc_id} v${mainDoc.version} - ${mainDoc.title}):\n\n${preview}`;
+    const picks = bestSentences(query, selectedDocs, 3);
+
+    if (picks.length > 0) {
+      // Compose the answer: header from best doc, then bullet points with doc citations
+      const headerDoc = picks[0].doc;
+      answerText = `Based on **${headerDoc.title}** (v${headerDoc.version || '1.0'}, ${headerDoc.effective_date || ''}):\n\n`;
+      answerText += picks.map(p => `- ${p.sentence} [${p.doc.doc_id}]`).join('\n');
+    } else if (mainDoc.content && mainDoc.content.length > 30) {
+      // Fallback: if no sentences scored well, use first meaningful paragraph but acknowledge it
+      const preview = mainDoc.content.length > 450 ? mainDoc.content.slice(0, 450) + '...' : mainDoc.content;
+      answerText = `Based on **${mainDoc.title}** [${mainDoc.doc_id}]:\n\n${preview}`;
     } else {
-      answerText = `Authorized document ${mainDoc.doc_id} (${mainDoc.title}) verified.`;
+      answerText = `I found document **${mainDoc.title}** [${mainDoc.doc_id}] in your authorized scope, but couldn't extract a specific answer. Please consult the document directly.`;
     }
 
     if (untrustedDetected) {
-      answerText += "\n\n[Security Shield Alert] Untrusted instruction detected in document content. The instruction was ignored.";
+      answerText += "\n\n🛡️ **Security Shield Alert:** Untrusted instruction detected inside document content. The instruction was quarantined and ignored. This event has been logged.";
     }
 
     const citations = selectedDocs.slice(0, 3).map(d => ({
@@ -1178,7 +1274,9 @@ export const mockBackend = {
 
   deleteDocument(id) {
     let docs = getStoredDocuments();
-    docs = docs.filter(d => d.id !== parseInt(id));
+    // parseInt("DOC-101") = NaN, so we must compare all ID fields
+    const numId = parseInt(id);
+    docs = docs.filter(d => d.id !== numId && d.id !== id && d.doc_id !== id && d.doc_id !== String(numId));
     localStorage.setItem('nova_docs_store', JSON.stringify(docs));
     return { message: 'Document deleted successfully.' };
   },

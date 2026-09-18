@@ -157,13 +157,9 @@ def compose_grounded_answer(
     lines: List[str] = []
 
     if not picks:
-        # Fallback to first available document
-        top = evidence_items[0]
-        sents = split_sentences(top.get("content", ""))[:3]
-        doc_id = top.get("document_id") or top.get("doc_id")
-        lines.append(f"Based on **{top.get('title')}** (v{top.get('version', '1.0')}) [{doc_id}]:")
-        for s in sents:
-            lines.append(f"- {s} [{doc_id}]")
+        # No sentences scored high enough — the authorized documents don't contain a relevant answer.
+        # Return a graceful "not found" rather than dumping arbitrary document content.
+        return "I couldn't find sufficient accessible evidence in your authorized documents to answer that question. Try rephrasing, or check what documents are available to your role."
     else:
         top_item = picks[0][1]
         top_doc_id = top_item.get("document_id") or top_item.get("doc_id")
