@@ -54,11 +54,11 @@ export default function Solutions() {
     <div className="py-16 space-y-20">
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl">
-          <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">Enterprise Solutions</span>
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight mt-2 sm:text-5xl">
+          <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Enterprise Solutions</span>
+          <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mt-2 sm:text-5xl">
             Modern Digital Operations for Resilient Enterprises
           </h1>
-          <p className="text-base text-slate-600 mt-4 leading-relaxed">
+          <p className="text-base text-slate-600 dark:text-slate-300 mt-4 leading-relaxed">
             Nova Solutions delivers secure data infrastructure, cloud modernization, and operational intelligence designed to solve mission-critical enterprise challenges.
           </p>
         </div>
@@ -68,21 +68,21 @@ export default function Solutions() {
         {solutions.map((sol) => {
           const Icon = sol.icon;
           return (
-            <div key={sol.title} className="p-8 sm:p-10 rounded-3xl bg-white border border-slate-200 shadow-xs grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div key={sol.title} className="p-8 sm:p-10 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs grid grid-cols-1 lg:grid-cols-3 gap-8 items-start transition-colors duration-200">
               <div className="lg:col-span-1 space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-100 dark:border-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                   <Icon className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">{sol.title}</h3>
-                <p className="text-xs text-slate-600 leading-relaxed">{sol.description}</p>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">{sol.title}</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{sol.description}</p>
               </div>
 
-              <div className="lg:col-span-2 bg-slate-50 p-6 rounded-2xl border border-slate-200/80">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">Core Capabilities</h4>
+              <div className="lg:col-span-2 bg-slate-50 dark:bg-slate-800/60 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Core Capabilities</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {sol.features.map((feat) => (
-                    <div key={feat} className="flex items-start space-x-2 text-xs text-slate-700">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <div key={feat} className="flex items-start space-x-2 text-xs text-slate-700 dark:text-slate-300">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                       <span>{feat}</span>
                     </div>
                   ))}
@@ -94,7 +94,7 @@ export default function Solutions() {
       </section>
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-slate-900 rounded-3xl p-8 sm:p-10 text-center text-white space-y-4">
+        <div className="bg-slate-900 dark:bg-slate-900/90 rounded-3xl p-8 sm:p-10 text-center text-white space-y-4 border border-slate-800">
           <h3 className="text-2xl font-bold">Nova Solutions Employee Intranet</h3>
           <p className="text-xs text-slate-300 max-w-lg mx-auto">
             Authorized team members can access internal tools, projects, and the NexusGuard assistant through the company portal.
@@ -102,9 +102,9 @@ export default function Solutions() {
           <div className="pt-2">
             <Link
               to="/login"
-              className="inline-flex items-center space-x-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition"
+              className="inline-flex items-center space-x-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs transition"
             >
-              <span>Sign In</span>
+              <span>Sign In to Intranet</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

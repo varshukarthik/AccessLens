@@ -133,6 +133,10 @@ export const api = {
     }
   },
 
+  async getWorkloadData() {
+    return this.getWorkload();
+  },
+
   // Research (NexusGuard)
   async queryNexusGuard(query, sessionId = null) {
     try {

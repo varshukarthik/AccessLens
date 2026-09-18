@@ -77,7 +77,7 @@ export default function Dashboard() {
             {getGreeting()}, {user?.name}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            {currentDateStr} ? <span className="font-semibold text-slate-700 dark:text-slate-300">{user?.role}</span> in <span className="font-semibold text-slate-700 dark:text-slate-300">{user?.department}</span> (ID: <span className="font-mono text-slate-700 dark:text-slate-300 font-bold">{user?.employee_id}</span>)
+            {currentDateStr} • <span className="font-semibold text-slate-700 dark:text-slate-300">{user?.role}</span> in <span className="font-semibold text-slate-700 dark:text-slate-300">{user?.department}</span> (ID: <span className="font-mono text-slate-700 dark:text-slate-300 font-bold">{user?.employee_id}</span>)
           </p>
         </div>
 
@@ -113,7 +113,7 @@ export default function Dashboard() {
           <div className="text-2xl font-bold text-slate-900 dark:text-white">{tasks.length}</div>
           <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between">
             <span>Active deliverables</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">View Board ?</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">View Board →</span>
           </div>
         </Link>
 
@@ -137,7 +137,7 @@ export default function Dashboard() {
           <div className="text-2xl font-bold text-slate-900 dark:text-white">{documents.length}</div>
           <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between">
             <span>In {user?.clearance} tier</span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Open Vault ?</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Open Vault →</span>
           </div>
         </Link>
 
@@ -160,7 +160,7 @@ export default function Dashboard() {
                 <h3 className="font-bold text-slate-900 dark:text-white text-sm">Assigned Tasks & Work Items</h3>
               </div>
               <Link to="/portal/tasks" className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-semibold">
-                Manage All ?
+                Manage All →
               </Link>
             </div>
 
@@ -186,7 +186,7 @@ export default function Dashboard() {
                         <td className="py-3.5 px-4 font-mono font-bold text-slate-900 dark:text-white">{t.task_id || t.id}</td>
                         <td className="py-3.5 px-4">
                           <div className="font-semibold text-slate-800 dark:text-slate-200">{t.title}</div>
-                          <div className="text-[11px] text-slate-400">{t.category || t.project} ? Role: {t.assigned_role || user?.role}</div>
+                          <div className="text-[11px] text-slate-400">{t.category || t.project} • Role: {t.assigned_role || user?.role}</div>
                         </td>
                         <td className="py-3.5 px-4">
                           <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold border ${
@@ -268,7 +268,7 @@ export default function Dashboard() {
                     <Clock className="w-3 h-3 text-slate-400" />
                     <span>{m.time}</span>
                   </div>
-                  <div className="text-[10px] text-slate-400">{m.location} ? {m.organizer}</div>
+                  <div className="text-[10px] text-slate-400">{m.location} • {m.organizer}</div>
                 </div>
               ))}
             </div>
@@ -281,7 +281,7 @@ export default function Dashboard() {
                 <h3 className="font-bold text-slate-900 dark:text-white text-sm">Recent Documents</h3>
               </div>
               <Link to="/portal/documents" className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-semibold">
-                Vault ?
+                Vault →
               </Link>
             </div>
 
@@ -298,7 +298,7 @@ export default function Dashboard() {
                       <span className="font-mono text-[10px] px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded font-semibold">{d.doc_id}</span>
                     </div>
                     <div className="text-[10px] text-slate-400 flex items-center justify-between">
-                      <span>v{d.version} ? {d.effective_date}</span>
+                      <span>v{d.version} • {d.effective_date}</span>
                       <span className="text-emerald-700 dark:text-emerald-400 font-semibold">{d.classification}</span>
                     </div>
                   </div>
@@ -320,7 +320,7 @@ export default function Dashboard() {
                     <span className="font-semibold text-slate-900 dark:text-white">{a.title}</span>
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{a.summary}</p>
-                  <div className="text-[10px] text-slate-400 font-mono pt-1">{a.dept} ? {a.date}</div>
+                  <div className="text-[10px] text-slate-400 font-mono pt-1">{a.dept} • {a.date}</div>
                 </div>
               ))}
             </div>

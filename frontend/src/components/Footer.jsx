@@ -42,7 +42,7 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-slate-900 dark:text-white mb-3 text-xs uppercase tracking-wider">Global Headquarters</h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-              San Francisco ? London ? Singapore ? Bengaluru ? Tokyo
+              San Francisco • London • Singapore • Bengaluru • Tokyo
             </p>
             <div className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[11px]">
               <Lock className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
@@ -53,7 +53,7 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400">
           <div>
-            ? {new Date().getFullYear()} Nova Solutions Inc. All rights reserved.
+            © {new Date().getFullYear()} Nova Solutions Inc. All rights reserved.
           </div>
           <div className="flex space-x-6 mt-4 sm:mt-0">
             <span className="hover:text-slate-900 dark:hover:text-white cursor-pointer">Privacy Policy</span>

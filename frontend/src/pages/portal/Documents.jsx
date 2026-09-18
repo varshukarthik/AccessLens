@@ -146,7 +146,7 @@ export default function Documents() {
               <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
                 <div className="flex items-center space-x-1 font-mono">
                   <Calendar className="w-3 h-3 text-slate-400" />
-                  <span>v{doc.version} ? {doc.effective_date}</span>
+                  <span>v{doc.version} • {doc.effective_date}</span>
                 </div>
                 <span className="text-emerald-600 dark:text-emerald-400 font-semibold group-hover:underline flex items-center space-x-0.5">
                   <span>View</span>

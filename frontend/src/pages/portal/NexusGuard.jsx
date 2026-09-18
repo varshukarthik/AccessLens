@@ -209,7 +209,7 @@ export default function NexusGuard() {
                   <span>Authenticated as <strong className="text-slate-800 dark:text-slate-200">{user?.name}</strong></span>
                 </div>
                 <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-bold">
-                  {user?.clearance} ? {user?.department}
+                  {user?.clearance} • {user?.department}
                 </span>
               </div>
             </div>
@@ -282,9 +282,9 @@ export default function NexusGuard() {
                                       </span>
                                     </div>
                                     <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between">
-                                      <span>v{c.version} ? {c.effective_date}</span>
+                                      <span>v{c.version} • {c.effective_date}</span>
                                       <span className="text-emerald-600 dark:text-emerald-400 font-semibold group-hover:underline text-[10px]">
-                                        View Source ?
+                                        View Source →
                                       </span>
                                     </div>
                                   </div>
@@ -353,7 +353,7 @@ export default function NexusGuard() {
             </button>
           </form>
           <div className="text-center text-[10px] text-slate-400 mt-2">
-            Deterministic pre-LLM security active ? Grounded answers derived solely from permitted evidence
+            Deterministic pre-LLM security active • Grounded answers derived solely from permitted evidence
           </div>
         </div>
       </div>
