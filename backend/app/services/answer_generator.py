@@ -60,63 +60,9 @@ class AnswerGenerator:
     @classmethod
     def _generalized_grounded_synthesis(cls, query: str, evidence_items: List[Dict[str, Any]]) -> str:
         """
-        Generalized grounded synthesis over any arbitrary document contents.
-        Parses sentences and relevance matching without hardcoded scenarios.
+        Generalized grounded synthesis powered by composer.py.
+        Provides token overlap scoring, numeric boost, header penalty, version conflicts, and citations.
         """
-        query_words = set(re.findall(r'\b[a-zA-Z0-9_\-\.]+\b', query.lower()))
-        stop_words = {"a", "an", "the", "is", "are", "was", "were", "what", "which", "who", "whom", "this", "that", "these", "those", "in", "on", "at", "to", "for", "of", "with", "by", "from", "about", "me", "my", "you", "your", "can", "could", "should", "would", "do", "does", "did", "tell", "show"}
-        keywords = {w for w in query_words if w not in stop_words and len(w) > 1}
+        from app.services.composer import compose_grounded_answer
+        return compose_grounded_answer(query, evidence_items)
 
-        # Check for general document listing questions ("what documents can I access?")
-        if any(term in query.lower() for term in ["what documents", "what internal documents", "can i access", "list documents", "my documents", "available documents"]):
-            doc_list = "\n".join([f"- **{item['title']}** (`{item['document_id']}`, v{item['version']}, {item.get('classification', 'Internal')})" for item in evidence_items])
-            return f"Based on your authenticated permissions, you have authorized access to the following records:\n\n{doc_list}"
-
-        # Match sentences across authorized evidence
-        matching_sentences = []
-        for item in evidence_items:
-            content = item.get("content", "")
-            # Split by period, newline, or semicolon
-            sentences = re.split(r'(?<=[.!?\n])\s+', content)
-            for s in sentences:
-                s_clean = s.strip()
-                if not s_clean:
-                    continue
-                s_lower = s_clean.lower()
-                # Count keyword matches
-                matches = sum(1 for kw in keywords if kw in s_lower)
-                if matches > 0:
-                    matching_sentences.append({
-                        "sentence": s_clean,
-                        "matches": matches,
-                        "doc_id": item["document_id"],
-                        "title": item["title"],
-                        "version": item.get("version", "1.0"),
-                        "effective_date": item.get("effective_date", "")
-                    })
-
-        if not matching_sentences:
-            # If no sentences in the authorized evidence match the question keywords
-            return SAFE_NO_ACCESS_MESSAGE
-
-        # Sort by relevance: match count, presence of numeric data, non-header preference, and length
-        def score_match(m):
-            has_number = 1 if re.search(r'\d+', m["sentence"]) else 0
-            is_header = 1 if m["sentence"].startswith('#') else 0
-            return (m["matches"], has_number, -is_header, len(m["sentence"]))
-
-        matching_sentences.sort(key=score_match, reverse=True)
-        top_match = matching_sentences[0]
-
-        # Check if question asks for a specific fact/summary
-        if len(matching_sentences) == 1 or "summarize" not in query.lower():
-            return f"According to authorized internal records ({top_match['title']}, {top_match['doc_id']} v{top_match['version']}):\n\n{top_match['sentence']}"
-        else:
-            # Summary of top matching facts
-            unique_sentences = []
-            seen = set()
-            for m in matching_sentences[:3]:
-                if m["sentence"] not in seen:
-                    seen.add(m["sentence"])
-                    unique_sentences.append(f"- {m['sentence']} *({m['title']}, {m['doc_id']} v{m['version']})*")
-            return "Based on authorized company records:\n\n" + "\n".join(unique_sentences)

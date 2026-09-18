@@ -75,7 +75,116 @@ class ActionEngine:
             if re.search(pattern, q):
                 return True, 'LEAVE_BALANCE_INQUIRY'
 
+        # 4. IT Support Ticket Creation Intent
+        ticket_patterns = [
+            r'(?:create|raise|file|submit|open)\s+(?:an?\s+)?(?:it\s+|support\s+)?ticket',
+            r'ticket\s+for\s+',
+            r'(?:laptop|monitor|screen|keyboard|mouse|hardware)\s+(?:issue|broken|flickering|not\s+working|problem)',
+            r'(?:vpn|wifi|network|internet)\s+(?:issue|down|error|disconnected|problem)'
+        ]
+        for pattern in ticket_patterns:
+            if re.search(pattern, q):
+                return True, 'IT_TICKET_CREATION'
+
+        # 5. Email Drafting Intent
+        email_patterns = [
+            r'(?:draft|write|compose|send)\s+(?:an?\s+)?email',
+            r'email\s+(?:to\s+)?(?:my\s+)?(?:manager|lead|boss|colleague|[\w.+-]+@)',
+            r'email\s+[A-Z][a-z]+'
+        ]
+        for pattern in email_patterns:
+            if re.search(pattern, q):
+                return True, 'EMAIL_DRAFTING'
+
+        # 6. Task Search Intent
+        task_patterns = [
+            r'(?:what\s+are|show|list|view|search)\s+(?:all\s+)?(?:my\s+)?tasks',
+            r'my\s+open\s+tasks',
+            r'tasks?\s+assigned\s+to\s+me'
+        ]
+        for pattern in task_patterns:
+            if re.search(pattern, q):
+                return True, 'TASK_SEARCH'
+
+        # 7. Project Status Query Intent
+        project_patterns = [
+            r'status\s+of\s+project\s+(\w+)',
+            r'project\s+(\w+)\s+status',
+            r'how\s+is\s+project\s+(\w+)\s+(?:going|tracking|progressing)'
+        ]
+        for pattern in project_patterns:
+            if re.search(pattern, q):
+                return True, 'PROJECT_STATUS'
+
         return False, ''
+
+    @classmethod
+    def parse_ticket_params(cls, query: str) -> Dict[str, Any]:
+        t = query.lower()
+        cat = ("Hardware" if re.search(r"laptop|monitor|keyboard|mouse|printer|hardware|battery|screen", t) else
+               "Network" if re.search(r"vpn|wifi|wi-fi|network|internet", t) else
+               "Access" if re.search(r"access|password|login|account|locked", t) else
+               "Software" if re.search(r"install|software|licen[cs]e|app|ide|update", t) else "General")
+        pri = "P2" if re.search(r"urgent|asap|not working|down|blocked|cannot work|critical", t) else "P3"
+        m = re.search(r"\b(?:for|about|because|regarding)\s+(?:my\s+)?(.{4,90}?)(?:[.?!]|$)", query, re.I)
+        subject = m.group(1).strip() if m else f"{cat} assistance request"
+        return {
+            "title": subject[:1].upper() + subject[1:],
+            "description": f"Automated Service Desk request via NexusGuard: \"{query.strip()}\"",
+            "priority": pri,
+            "category": cat
+        }
+
+    @classmethod
+    def parse_email_params(cls, user: User, query: str) -> Dict[str, Any]:
+        q = query.strip()
+        # Recipient detection
+        recipient_email = "manager@novasolutions.com"
+        recipient_name = "Reporting Manager"
+        if re.search(r"\bmanager\b|\bboss\b|\blead\b", q, re.I):
+            recipient_email = "manager@novasolutions.com"
+            recipient_name = "Reporting Manager"
+        else:
+            email_match = re.search(r"[\w.+-]+@[\w.-]+", q)
+            if email_match:
+                recipient_email = email_match.group(0).lower()
+                recipient_name = recipient_email.split("@")[0].replace(".", " ").title()
+
+        # Domain boundary verification: Only allow internal company domain
+        is_external = not (recipient_email.endswith("@novasolutions.com") or recipient_email.endswith("@novatech.demo"))
+
+        # Topic/Clause extraction
+        m = re.search(r"\b(?:saying|that says|to say|telling (?:them|him|her)|letting (?:them|him|her) know|informing (?:them|him|her)|about)\s+(.+)$", q, re.I)
+        clause = (m.group(1) if m else "I wanted to provide a quick workplace update").strip().rstrip(".!")
+        clause = re.sub(r"\bI'll\b", "I will", clause, flags=re.I)
+        clause = re.sub(r"\bI'm\b", "I am", clause, flags=re.I)
+
+        is_wfh = bool(re.search(r"\b(remote|remotely|from home|wfh)\b", clause, re.I))
+        first_name = user.name.split()[0] if user.name else "Employee"
+
+        if is_wfh:
+            subject = f"Working Remotely Notification — {first_name}"
+            body = (
+                f"Hi {recipient_name},\n\n"
+                f"{clause[0].upper() + clause[1:]}. I will remain reachable on Slack/Teams and email during core collaboration hours (11:00–16:00 IST), in compliance with Nova Solutions Work From Home Policy.\n\n"
+                f"Regards,\n{user.name}\n{user.department}"
+            )
+        else:
+            subject = f"Workplace Update — {first_name}"
+            body = (
+                f"Hi {recipient_name},\n\n"
+                f"{clause[0].upper() + clause[1:]}.\n\n"
+                f"Regards,\n{user.name}\n{user.department}"
+            )
+
+        return {
+            "recipient_email": recipient_email,
+            "recipient_name": recipient_name,
+            "subject": subject,
+            "body": body,
+            "is_external": is_external
+        }
+
 
     @classmethod
     def parse_leave_request_params(cls, query: str) -> Dict[str, Any]:

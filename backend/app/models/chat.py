@@ -26,6 +26,7 @@ class ChatMessage(Base):
     untrusted_instruction_detected = Column(Integer, nullable=True, default=0)
     evidence_status = Column(String(50), nullable=True)  # "AUTHORIZED_EVIDENCE_USED", "NO_AUTHORIZED_EVIDENCE", etc.
     request_id = Column(String(100), nullable=True)
+    meta_json = Column(Text, nullable=True, default="{}")
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     @property
@@ -49,3 +50,39 @@ class ChatMessage(Base):
     @response_scope.setter
     def response_scope(self, val):
         self.response_scope_json = json.dumps(val if val else {})
+
+    @property
+    def meta(self):
+        try:
+            return json.loads(self.meta_json) if self.meta_json else {}
+        except Exception:
+            return {}
+
+    @meta.setter
+    def meta(self, val):
+        self.meta_json = json.dumps(val if isinstance(val, dict) else {})
+
+    @property
+    def timeline(self):
+        return self.meta.get("timeline", [])
+
+    @property
+    def context_manifest(self):
+        return self.meta.get("context_manifest", [])
+
+    @property
+    def withheld_documents(self):
+        return self.meta.get("withheld_documents", [])
+
+    @property
+    def security_events(self):
+        return self.meta.get("security_events", [])
+
+    @property
+    def dlp_redactions(self):
+        return self.meta.get("dlp_redactions", [])
+
+    @property
+    def intent(self):
+        return self.meta.get("intent", "information_retrieval")
+

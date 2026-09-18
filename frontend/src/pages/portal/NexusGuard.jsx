@@ -21,8 +21,330 @@ import {
   Briefcase,
   ShieldAlert,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Eye,
+  XCircle,
+  Mail,
+  Ticket,
+  Check,
+  X,
+  Clock
 } from 'lucide-react';
+
+const INTENT_LABELS = {
+  information_retrieval: "Information Retrieval",
+  workflow_execution: "Workplace Action",
+  communication: "Communication",
+  data_analysis: "Data Analysis",
+  restricted_data_request: "Restricted Data Request",
+  LEAVE_APPLICATION: "Leave Application",
+  LEAVE_BALANCE_INQUIRY: "Leave Balance",
+  LEAVE_STATUS_INQUIRY: "Leave Status",
+  IT_TICKET_CREATION: "IT Service Desk",
+  EMAIL_DRAFTING: "Email Draft",
+  TASK_SEARCH: "Task Search",
+  PROJECT_STATUS: "Project Status"
+};
+
+function ExecutionTimeline({ steps }) {
+  const [isOpen, setIsOpen] = useState(false);
+  if (!steps || steps.length === 0) return null;
+  const doneCount = steps.filter(s => s.status === 'done').length;
+  const hasBlocked = steps.some(s => s.status === 'blocked' || s.status === 'denied');
+
+  return (
+    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/60 overflow-hidden text-xs">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between px-3.5 py-2 text-left hover:bg-slate-100/60 dark:hover:bg-slate-800/60 transition cursor-pointer"
+      >
+        <div className="flex items-center space-x-2">
+          <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+          <span className="font-semibold text-slate-800 dark:text-slate-200">Agent execution timeline</span>
+          <span className="text-slate-400 text-[11px]">· {doneCount}/{steps.length} steps</span>
+          {hasBlocked && (
+            <span className="px-1.5 py-0.2 rounded bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 text-[10px] font-semibold">
+              Policy Enforced
+            </span>
+          )}
+        </div>
+        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isOpen && (
+        <ol className="px-4 py-3 space-y-2 border-t border-slate-200 dark:border-slate-800/80">
+          {steps.map((s, i) => (
+            <li key={i} className="flex items-start space-x-2.5">
+              <div className="mt-0.5 flex-shrink-0">
+                {s.status === 'done' ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                ) : s.status === 'denied' || s.status === 'blocked' ? (
+                  <ShieldAlert className="w-3.5 h-3.5 text-rose-500" />
+                ) : (
+                  <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center space-x-1.5">
+                  <span className={`font-medium ${s.status === 'blocked' || s.status === 'denied' ? 'text-rose-700 dark:text-rose-300' : 'text-slate-700 dark:text-slate-200'}`}>
+                    {s.label}
+                  </span>
+                  {s.tool && (
+                    <span className="font-mono text-[9px] px-1 py-0.2 rounded bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                      {s.tool}()
+                    </span>
+                  )}
+                </div>
+                {s.detail && <p className="text-slate-400 dark:text-slate-500 text-[11px] truncate">{s.detail}</p>}
+              </div>
+              {s.t_ms !== undefined && (
+                <span className="font-mono text-[10px] text-slate-400">{s.t_ms}ms</span>
+              )}
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  );
+}
+
+function ContextManifest({ manifest }) {
+  const [isOpen, setIsOpen] = useState(false);
+  if (!manifest || manifest.length === 0) return null;
+  const authCount = manifest.filter(c => c.status === 'authorized').length;
+  const withheldCount = manifest.filter(c => c.status === 'withheld').length;
+
+  return (
+    <div className="pt-2 text-xs">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="inline-flex items-center space-x-1.5 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition cursor-pointer"
+      >
+        <Eye className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+        <span>What the AI was allowed to see ({authCount} authorized, {withheldCount} withheld)</span>
+        <ChevronDown className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isOpen && (
+        <div className="mt-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 space-y-1.5">
+          {manifest.map((item, i) => (
+            <div key={i} className="flex items-center justify-between text-[11px] py-0.5">
+              <div className="flex items-center space-x-2 min-w-0 flex-1">
+                {item.status === 'authorized' ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                ) : (
+                  <XCircle className="w-3.5 h-3.5 text-rose-500 flex-shrink-0" />
+                )}
+                <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{item.doc_id}</span>
+                <span className="truncate text-slate-600 dark:text-slate-300">{item.title}</span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-200 dark:bg-slate-700 font-mono text-slate-600 dark:text-slate-300">
+                  {item.classification}
+                </span>
+              </div>
+              <span className={`text-[10px] font-medium flex-shrink-0 ml-2 ${item.status === 'authorized' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                {item.status === 'authorized' ? 'Passed to AI Context' : `Withheld (${item.rule || 'RBAC'})`}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DLPBanner({ redactions }) {
+  if (!redactions || redactions.length === 0) return null;
+  return (
+    <div className="p-3 rounded-xl bg-amber-500/10 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 flex items-center space-x-2.5 text-xs text-amber-900 dark:text-amber-200">
+      <Eye className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+      <div>
+        <span className="font-bold">Data Loss Prevention (DLP) Active: </span>
+        <span>Sensitive employee PII was automatically masked ({redactions.map(r => `${r.type} × ${r.count}`).join(', ')}).</span>
+      </div>
+    </div>
+  );
+}
+
+function ActionCard({ actionCard }) {
+  const [isExecuted, setIsExecuted] = useState(false);
+  const [isCancelled, setIsCancelled] = useState(false);
+  if (!actionCard) return null;
+
+  const aType = actionCard.action_type;
+
+  if (aType === 'LEAVE_APPLICATION') {
+    return (
+      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span className="font-semibold text-xs text-slate-900 dark:text-white">
+              Workplace Leave Application
+            </span>
+          </div>
+          {actionCard.request_id && (
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-bold">
+              {actionCard.request_id}
+            </span>
+          )}
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+          <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Period</span>
+            <span className="font-medium text-slate-900 dark:text-white">{actionCard.details?.['Duration'] || `${actionCard.start_date || ''} → ${actionCard.end_date || ''}`}</span>
+          </div>
+          <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Status</span>
+            <span className="font-semibold text-amber-600 dark:text-amber-400">{actionCard.details?.['Status'] || actionCard.status || 'Pending Approval'}</span>
+          </div>
+          <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Approver</span>
+            <span className="font-medium text-slate-900 dark:text-white truncate">{actionCard.details?.['Assigned Approver'] || actionCard.approver_name || 'Reporting Manager'}</span>
+          </div>
+          <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Remaining Quota</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">{actionCard.details?.['Remaining Balance'] || 'Verified'}</span>
+          </div>
+        </div>
+        <div className="flex items-center justify-between pt-1 text-[11px]">
+          <span className="text-slate-500 dark:text-slate-400 italic">
+            Section 4.2 Governance: Self-approval prohibited. Manager countersignature enforced.
+          </span>
+          <Link to="/portal/approvals" className="inline-flex items-center space-x-1 text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
+            <span>View in Approvals Portal</span>
+            <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (aType === 'IT_TICKET') {
+    return (
+      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Ticket className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <span className="font-semibold text-xs text-slate-900 dark:text-white">{actionCard.title}</span>
+          </div>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-300 font-bold">
+            {actionCard.request_id}
+          </span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+          <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Category</span>
+            <span className="font-medium text-slate-900 dark:text-white">{actionCard.details?.['Category']}</span>
+          </div>
+          <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Priority</span>
+            <span className="font-bold text-rose-600 dark:text-rose-400">{actionCard.details?.['Priority']}</span>
+          </div>
+          <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Service Queue</span>
+            <span className="font-medium text-slate-900 dark:text-white truncate">{actionCard.details?.['Queue'] || 'Global Helpdesk'}</span>
+          </div>
+        </div>
+        <div className="flex items-center justify-end space-x-2 pt-1">
+          {isExecuted ? (
+            <span className="text-emerald-600 dark:text-emerald-400 text-xs font-semibold flex items-center space-x-1">
+              <Check className="w-3.5 h-3.5" />
+              <span>Ticket Submitted to Global Helpdesk</span>
+            </span>
+          ) : isCancelled ? (
+            <span className="text-slate-400 text-xs italic">Ticket Cancelled</span>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setIsCancelled(true)}
+                className="px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsExecuted(true)}
+                className="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition flex items-center space-x-1"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>Approve & Execute</span>
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (aType === 'EMAIL_DRAFT') {
+    return (
+      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Mail className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+            <span className="font-semibold text-xs text-slate-900 dark:text-white">{actionCard.title}</span>
+          </div>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-300 font-bold">
+            {actionCard.request_id}
+          </span>
+        </div>
+        <div className="space-y-1.5 text-xs">
+          <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Recipient</span>
+            <span className="font-mono text-slate-900 dark:text-white">{actionCard.details?.['Recipient'] || actionCard.details?.['To']}</span>
+          </div>
+          <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 whitespace-pre-wrap font-sans text-slate-700 dark:text-slate-300">
+            {actionCard.details?.['Body']}
+          </div>
+        </div>
+        <div className="flex items-center justify-end space-x-2 pt-1">
+          {isExecuted ? (
+            <span className="text-emerald-600 dark:text-emerald-400 text-xs font-semibold flex items-center space-x-1">
+              <Check className="w-3.5 h-3.5" />
+              <span>Email Sent to Internal Recipient</span>
+            </span>
+          ) : isCancelled ? (
+            <span className="text-slate-400 text-xs italic">Email Cancelled</span>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setIsCancelled(true)}
+                className="px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsExecuted(true)}
+                className="px-3 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold shadow-xs transition flex items-center space-x-1"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>Approve & Send</span>
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Generic card for Task Search, Balance, Project Status
+  return (
+    <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
+      <div className="space-y-0.5">
+        <span className="font-bold text-slate-800 dark:text-slate-200">{actionCard.title}</span>
+        <span className="text-slate-500 dark:text-slate-400 block">{actionCard.summary}</span>
+      </div>
+      <span className="text-emerald-600 dark:text-emerald-400 font-semibold font-mono text-xs">
+        {actionCard.action_status}
+      </span>
+    </div>
+  );
+}
 
 const SUGGESTED_CATEGORIES = [
   {
@@ -31,16 +353,28 @@ const SUGGESTED_CATEGORIES = [
     badgeColor: "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800",
     questions: [
       {
-        title: "Apply for 3-Day Leave",
+        title: "Submit 3-Day Leave Request",
         prompt: "Apply leave from 23 September to 25 September for personal errands",
         tag: "Action",
         detail: "Deterministic routing to manager & balance validation"
       },
       {
-        title: "Check Leave Entitlement",
+        title: "Check Leave Balance",
         prompt: "What is my current leave balance and pending requests?",
         tag: "Inquiry",
         detail: "Real-time balance & pending request verification"
+      },
+      {
+        title: "Raise IT Helpdesk Ticket",
+        prompt: "Raise an IT ticket for my laptop screen flickering and display distortion",
+        tag: "Service Desk",
+        detail: "P2 Hardware issue routed to IT Service Desk"
+      },
+      {
+        title: "Draft Remote Work Notification",
+        prompt: "Draft an email to my manager saying I will work remotely tomorrow",
+        tag: "Email Draft",
+        detail: "Domain boundary verified (@novasolutions.com)"
       }
     ]
   },
@@ -54,6 +388,12 @@ const SUGGESTED_CATEGORIES = [
         prompt: "What is the Q4 revenue forecast for Nova Solutions?",
         tag: "ABAC Gate",
         detail: "Allowed for Finance (v2.0 ₹120 Cr) • Denied for other departments"
+      },
+      {
+        title: "Work From Home Policy (Conflict)",
+        prompt: "Find the work-from-home policy and summarize it.",
+        tag: "Resolution",
+        detail: "WFH 2026 (3 days) supersedes 2024 (2 days) with conflict note"
       },
       {
         title: "Regional Budget Memo",
@@ -79,6 +419,12 @@ const SUGGESTED_CATEGORIES = [
         prompt: "What is the cloud migration roadmap and risks for Project Atlas?",
         tag: "PRJ-002 Gated",
         detail: "Access denied unless assigned to Project Atlas"
+      },
+      {
+        title: "Search My Assigned Tasks",
+        prompt: "What are my assigned open tasks?",
+        tag: "My Work",
+        detail: "Lists personal open deliverables with priority & due dates"
       }
     ]
   },
@@ -113,6 +459,12 @@ const SUGGESTED_CATEGORIES = [
         detail: "Deterministic pre-retrieval policy block test"
       },
       {
+        title: "Data Loss Prevention (DLP) Masking",
+        prompt: "What is my PAN and bank account number on file?",
+        tag: "DLP Redaction",
+        detail: "Automatic masking of PAN, Aadhaar, bank accounts, and credentials"
+      },
+      {
         title: "Forensic Incident Report INC-SEC-2026-89",
         prompt: "Analyze the forensic vulnerability report INC-SEC-2026-89 for third-party attack vectors.",
         tag: "Security Audit",
@@ -121,6 +473,7 @@ const SUGGESTED_CATEGORIES = [
     ]
   }
 ];
+
 
 export default function NexusGuard() {
   const { user } = useAuth();
@@ -244,6 +597,12 @@ export default function NexusGuard() {
         action_card: response.action_card || null,
         response_scope: response.response_scope || null,
         untrusted_instruction_detected: response.untrusted_instruction_detected || false,
+        timeline: response.timeline || [],
+        context_manifest: response.context_manifest || [],
+        withheld_documents: response.withheld_documents || [],
+        security_events: response.security_events || [],
+        dlp_redactions: response.dlp_redactions || [],
+        intent: response.intent || null,
         created_at: new Date().toISOString()
       };
 
@@ -465,111 +824,84 @@ export default function NexusGuard() {
                               )}
                             </div>
 
-                            {m.request_id && (
-                              <span className="text-[10px] font-mono text-slate-400">
-                                {m.request_id}
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap font-sans">
-                            {m.content}
-                          </div>
-
-                          {m.action_card && (
-                            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-3">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-2">
-                                  <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                                  <span className="font-semibold text-xs text-slate-900 dark:text-white">
-                                    {m.action_card.action_type === 'LEAVE_APPLICATION' ? 'Workplace Leave Application' : 'Workplace Leave Entitlement'}
+                              <div className="flex items-center space-x-2">
+                                {m.intent && (
+                                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                                    {INTENT_LABELS[m.intent] || m.intent}
                                   </span>
-                                </div>
-                                {m.action_card.request_id && (
-                                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-bold">
-                                    {m.action_card.request_id}
+                                )}
+                                {m.request_id && (
+                                  <span className="text-[10px] font-mono text-slate-400">
+                                    {m.request_id}
                                   </span>
                                 )}
                               </div>
+                            </div>
 
-                              {m.action_card.action_type === 'LEAVE_APPLICATION' ? (
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                                  <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Period</span>
-                                    <span className="font-medium text-slate-900 dark:text-white">{m.action_card.start_date} → {m.action_card.end_date}</span>
-                                  </div>
-                                  <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Duration</span>
-                                    <span className="font-medium text-slate-900 dark:text-white">{m.action_card.days_count} business days</span>
-                                  </div>
-                                  <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Assigned Approver</span>
-                                    <span className="font-medium text-slate-900 dark:text-white">{m.action_card.approver_name || m.action_card.approver_id}</span>
-                                  </div>
-                                  <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-                                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Status</span>
-                                    <span className="font-semibold text-amber-600 dark:text-amber-400">{m.action_card.status}</span>
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="p-3 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
-                                  <span className="text-slate-600 dark:text-slate-300">Available Annual/Casual Balance</span>
-                                  <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">{m.action_card.remaining_balance} Days</span>
-                                </div>
-                              )}
+                            {/* Transparent Agent Execution Timeline */}
+                            {m.timeline && m.timeline.length > 0 && (
+                              <ExecutionTimeline steps={m.timeline} />
+                            )}
 
-                              <div className="flex items-center justify-between pt-1 text-[11px]">
-                                <span className="text-slate-500 dark:text-slate-400 italic">
-                                  Section 4.2 Governance: Self-approval prohibited. Manager countersignature enforced.
-                                </span>
-                                <Link 
-                                  to="/portal/approvals" 
-                                  className="inline-flex items-center space-x-1 text-emerald-600 dark:text-emerald-400 font-semibold hover:underline"
-                                >
-                                  <span>View in Approvals Portal</span>
-                                  <ArrowRight className="w-3 h-3" />
-                                </Link>
+                            {/* Active Data Loss Prevention (DLP) Banner */}
+                            {m.dlp_redactions && m.dlp_redactions.length > 0 && (
+                              <DLPBanner redactions={m.dlp_redactions} />
+                            )}
+
+                            {/* Synthesized / Extracted Grounded Content */}
+                            <div className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap font-sans">
+                              {m.content}
+                            </div>
+
+                            {/* Governed Workplace Action Cards (Leave, IT Ticket, Email Draft, etc.) */}
+                            {m.action_card && (
+                              <ActionCard actionCard={m.action_card} />
+                            )}
+
+                            {/* Grounded Document Sources */}
+                            {m.citations && m.citations.length > 0 && (
+                              <div className="pt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
+                                <span className="text-slate-400 dark:text-slate-500 text-[10px] font-medium mr-0.5">Sources:</span>
+                                {m.citations.map((c, cIdx) => (
+                                  <button
+                                    key={cIdx}
+                                    type="button"
+                                    onClick={() => handleOpenCitation(c)}
+                                    className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/70 transition font-mono text-[10px] font-medium group cursor-pointer"
+                                    title={`${c.title} (v${c.version}) - Click to inspect excerpt`}
+                                  >
+                                    <FileText className="w-3 h-3 text-slate-400 dark:text-slate-500 group-hover:text-emerald-500 transition" />
+                                    <span className="font-bold text-slate-900 dark:text-white">{c.document_id}</span>
+                                    <span className="text-slate-400 dark:text-slate-500 truncate max-w-[130px] font-sans">{c.title}</span>
+                                  </button>
+                                ))}
                               </div>
-                            </div>
-                          )}
+                            )}
 
-                          {m.citations && m.citations.length > 0 && (
-                            <div className="pt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
-                              <span className="text-slate-400 dark:text-slate-500 text-[10px] font-medium mr-0.5">Sources:</span>
-                              {m.citations.map((c, cIdx) => (
-                                <button
-                                  key={cIdx}
-                                  type="button"
-                                  onClick={() => handleOpenCitation(c)}
-                                  className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/70 transition font-mono text-[10px] font-medium group cursor-pointer"
-                                  title={`${c.title} (v${c.version}) - Click to inspect excerpt`}
-                                >
-                                  <FileText className="w-3 h-3 text-slate-400 dark:text-slate-500 group-hover:text-emerald-500 transition" />
-                                  <span className="font-bold text-slate-900 dark:text-white">{c.document_id}</span>
-                                  <span className="text-slate-400 dark:text-slate-500 truncate max-w-[130px] font-sans">{c.title}</span>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-
-                          {m.untrusted_instruction_detected && (
-                            <div className="p-3.5 rounded-xl bg-amber-500/10 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 flex items-start space-x-3 text-xs">
-                              <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-                              <div className="space-y-1">
-                                <div className="font-bold text-amber-900 dark:text-amber-200 flex items-center space-x-2">
-                                  <span>Prompt Injection & Untrusted Instruction Neutralized</span>
-                                  <span className="text-[10px] font-mono px-2 py-0.2 rounded bg-amber-200 dark:bg-amber-800/80 text-amber-900 dark:text-amber-100 font-semibold">
-                                    DEFENSE VERIFIED
-                                  </span>
+                            {/* Untrusted Instruction Quarantine Notification */}
+                            {m.untrusted_instruction_detected && (
+                              <div className="p-3.5 rounded-xl bg-amber-500/10 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 flex items-start space-x-3 text-xs">
+                                <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                                <div className="space-y-1">
+                                  <div className="font-bold text-amber-900 dark:text-amber-200 flex items-center space-x-2">
+                                    <span>Prompt Injection & Untrusted Instruction Neutralized</span>
+                                    <span className="text-[10px] font-mono px-2 py-0.2 rounded bg-amber-200 dark:bg-amber-800/80 text-amber-900 dark:text-amber-100 font-semibold">
+                                      DEFENSE VERIFIED
+                                    </span>
+                                  </div>
+                                  <p className="text-amber-800 dark:text-amber-300 leading-relaxed text-[11px]">
+                                    NexusGuard detected an untrusted instruction or adversarial override in the query/document payload. The adversarial payload was quarantined and ignored, and only verified factual evidence was evaluated.
+                                  </p>
                                 </div>
-                                <p className="text-amber-800 dark:text-amber-300 leading-relaxed text-[11px]">
-                                  NexusGuard detected an untrusted instruction or adversarial override in the query/document payload. The adversarial payload was quarantined and ignored, and only verified factual evidence was evaluated.
-                                </p>
                               </div>
-                            </div>
-                          )}
+                            )}
 
-                          {/* Interactive Access Scope & Policy Explainer ("Why this response?") */}
+                            {/* What the AI was allowed to see (Context Manifest) */}
+                            {m.context_manifest && m.context_manifest.length > 0 && (
+                              <ContextManifest manifest={m.context_manifest} />
+                            )}
+
+                            {/* Interactive Access Scope & Policy Explainer ("Why this response?") */}
                           <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex flex-col space-y-2">
                             <button
                               type="button"

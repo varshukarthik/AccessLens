@@ -24,6 +24,12 @@ class ResearchResponse(BaseModel):
     action_card: Optional[Any] = None
     response_scope: Optional[Any] = None
     untrusted_instruction_detected: Optional[bool] = False
+    timeline: Optional[List[Any]] = []
+    context_manifest: Optional[List[Any]] = []
+    withheld_documents: Optional[List[Any]] = []
+    security_events: Optional[List[Any]] = []
+    dlp_redactions: Optional[List[Any]] = []
+    intent: Optional[str] = "information_retrieval"
     
     # Note: Admin traces are NEVER included in this employee response schema.
 
@@ -37,6 +43,12 @@ class ChatMessageResponse(BaseModel):
     request_id: Optional[str] = None
     response_scope: Optional[Any] = None
     untrusted_instruction_detected: Optional[bool] = False
+    timeline: Optional[List[Any]] = []
+    context_manifest: Optional[List[Any]] = []
+    withheld_documents: Optional[List[Any]] = []
+    security_events: Optional[List[Any]] = []
+    dlp_redactions: Optional[List[Any]] = []
+    intent: Optional[str] = "information_retrieval"
     created_at: datetime
 
     class Config:
@@ -47,3 +59,4 @@ class ResearchSessionResponse(BaseModel):
     title: str
     created_at: datetime
     messages: List[ChatMessageResponse] = []
+

@@ -28,6 +28,10 @@ class PolicyEvaluationResult:
     reason_code: str
     reason_description: str
 
+    @property
+    def reason(self) -> str:
+        return self.reason_description
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "doc_id": self.doc_id,
