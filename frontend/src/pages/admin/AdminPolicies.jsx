@@ -55,26 +55,26 @@ export default function AdminPolicies() {
           <Sliders className="w-4 h-4" />
           <span>Rules & Policy Engine</span>
         </div>
-        <h1 className="text-2xl font-bold text-slate-900">Access Policies & Simulator</h1>
-        <p className="text-xs text-slate-500">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Access Policies & Simulator</h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           Deterministic classification matrix, reason codes, and live permission simulator.
         </p>
       </div>
 
       {/* Interactive Policy Simulator */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8 space-y-6">
-        <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs p-6 sm:p-8 space-y-6">
+        <div className="flex items-center space-x-2 border-b border-slate-100 dark:border-slate-800 pb-3">
           <Play className="w-4 h-4 text-purple-600 fill-purple-600" />
-          <h3 className="font-bold text-slate-900 text-sm">Interactive Policy Gate Simulator</h3>
+          <h3 className="font-bold text-slate-900 dark:text-white text-sm">Interactive Policy Gate Simulator</h3>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Select Employee Persona</label>
+            <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Select Employee Persona</label>
             <select
               value={selectedUser}
               onChange={(e) => setSelectedUser(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
             >
               {users.map(u => (
                 <option key={u.id} value={u.employee_id}>
@@ -85,11 +85,11 @@ export default function AdminPolicies() {
           </div>
 
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">Select Target Document</label>
+            <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Select Target Document</label>
             <select
               value={selectedDoc}
               onChange={(e) => setSelectedDoc(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
             >
               {documents.map(d => (
                 <option key={d.id} value={d.doc_id}>
@@ -151,10 +151,10 @@ export default function AdminPolicies() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Classification Hierarchy */}
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-          <h3 className="font-bold text-slate-900 text-sm">Classification Hierarchy</h3>
+          <h3 className="font-bold text-slate-900 dark:text-white text-sm">Classification Hierarchy</h3>
           <div className="space-y-2">
             {policyData?.classification_hierarchy?.map((lvl) => (
-              <div key={lvl.name} className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
+              <div key={lvl.name} className="p-3 rounded-xl bg-slate-50 border border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
                 <div>
                   <span className="font-bold text-slate-900">{lvl.name}</span>
                   <p className="text-[11px] text-slate-500">{lvl.description}</p>
@@ -169,10 +169,10 @@ export default function AdminPolicies() {
 
         {/* Reason Codes */}
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
-          <h3 className="font-bold text-slate-900 text-sm">Deterministic Reason Codes</h3>
+          <h3 className="font-bold text-slate-900 dark:text-white text-sm">Deterministic Reason Codes</h3>
           <div className="space-y-2">
             {policyData?.reason_codes?.map((rc) => (
-              <div key={rc.code} className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-0.5 text-xs">
+              <div key={rc.code} className="p-3 rounded-xl bg-slate-50 border border-slate-100 dark:border-slate-800 space-y-0.5 text-xs">
                 <span className="font-mono font-bold text-purple-700 text-[11px]">{rc.code}</span>
                 <p className="text-[11px] text-slate-500">{rc.description}</p>
               </div>

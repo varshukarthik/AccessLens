@@ -90,8 +90,8 @@ export default function SecurityInspector() {
             <Search className="w-4 h-4" />
             <span>Core Hackathon Verification Tool</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Security Inspector</h1>
-          <p className="text-xs text-slate-500">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Security Inspector</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Step-by-step visual verification: Candidate Retrieval → Deterministic Gate → Authorized Evidence → LLM Context.
           </p>
         </div>
@@ -136,7 +136,7 @@ export default function SecurityInspector() {
                 <User className="w-3.5 h-3.5 text-slate-500" />
                 <span>1. Authenticated User Context</span>
               </div>
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2 text-xs">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 dark:border-slate-800 space-y-2 text-xs">
                 <div className="flex justify-between">
                   <span className="text-slate-500">Employee ID</span>
                   <span className="font-bold text-slate-900 font-mono">{traceData.user?.employee_id}</span>
@@ -188,7 +188,7 @@ export default function SecurityInspector() {
 
           {/* STEP 3 & 4: Candidate Retrieval & Deterministic Policy Gate */}
           <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8 space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 flex items-center space-x-1.5">
                   <Database className="w-3.5 h-3.5" />
@@ -261,9 +261,9 @@ export default function SecurityInspector() {
                 <Layers className="w-3.5 h-3.5" />
                 <span>5. Version & Lineage Resolution</span>
               </div>
-              <h3 className="font-bold text-slate-900 text-sm">Authorized Effective Version</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white text-sm">Authorized Effective Version</h3>
 
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2 text-xs">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 dark:border-slate-800 space-y-2 text-xs">
                 <div className="flex justify-between font-semibold">
                   <span className="text-slate-600">Selected Winner(s):</span>
                   <span className="font-mono text-indigo-700">
@@ -287,7 +287,7 @@ export default function SecurityInspector() {
                 <Lock className="w-3.5 h-3.5" />
                 <span>6. Sanitized LLM Evidence Package</span>
               </div>
-              <h3 className="font-bold text-slate-900 text-sm">
+              <h3 className="font-bold text-slate-900 dark:text-white text-sm">
                 Payload Sent to LLM ({traceData.llm_evidence_package?.length || 0} Docs)
               </h3>
 
@@ -322,7 +322,7 @@ export default function SecurityInspector() {
 
           {/* STEP 8: Final Employee Output */}
           <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 flex items-center space-x-1.5">
                   <Bot className="w-3.5 h-3.5" />

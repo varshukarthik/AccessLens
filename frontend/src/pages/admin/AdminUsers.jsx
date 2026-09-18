@@ -156,15 +156,15 @@ export default function AdminUsers() {
             <Users className="w-4 h-4 text-indigo-600" />
             <span>Identity & Access Governance</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Users & Roles Directory</h1>
-          <p className="text-xs text-slate-500">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Users & Roles Directory</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Enrolled employee identities, cryptographic clearance tiers, department boundaries, and security roles.
           </p>
         </div>
 
         <button
           onClick={handleOpenCreate}
-          className="inline-flex items-center space-x-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold shadow-xs transition self-start sm:self-auto"
+          className="inline-flex items-center space-x-2 px-4 py-2.5 bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-xs transition self-start sm:self-auto"
         >
           <UserPlus className="w-4 h-4" />
           <span>Enroll New Employee</span>
@@ -172,7 +172,7 @@ export default function AdminUsers() {
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between text-xs">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between text-xs">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
           <input
@@ -180,23 +180,23 @@ export default function AdminUsers() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, ID, role, department..."
-            className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
         <div className="text-slate-500 font-medium">
-          Total: <span className="font-bold text-slate-900">{users.length}</span> employees enrolled
+          Total: <span className="font-bold text-slate-900 dark:text-white">{users.length}</span> employees enrolled
         </div>
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-xs text-slate-400 animate-pulse">Loading employee directory...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold text-[10px]">
+                <tr className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold text-[10px]">
                   <th className="py-3 px-4">Employee ID</th>
                   <th className="py-3 px-4">Full Name & Email</th>
                   <th className="py-3 px-4">Department</th>
@@ -207,16 +207,16 @@ export default function AdminUsers() {
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filteredUsers.map((u) => (
-                  <tr key={u.id} className="hover:bg-slate-50/60 transition">
+                  <tr key={u.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition">
                     <td className="py-3 px-4 font-mono font-bold text-slate-900">{u.employee_id}</td>
                     <td className="py-3 px-4">
                       <div className="font-semibold text-slate-800">{u.name}</div>
                       <div className="text-[11px] text-slate-400 font-mono">{u.email}</div>
                     </td>
                     <td className="py-3 px-4 font-medium text-slate-700">{u.department}</td>
-                    <td className="py-3 px-4 text-slate-600">{u.role}</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">{u.role}</td>
                     <td className="py-3 px-4">
                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold border ${
                         u.clearance === 'Restricted' ? 'bg-purple-50 text-purple-700 border-purple-200' :
@@ -275,7 +275,7 @@ export default function AdminUsers() {
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center space-x-2">
                 <UserPlus className="w-5 h-5 text-indigo-600" />
-                <h3 className="font-bold text-slate-900 text-lg">Enroll New Employee Identity</h3>
+                <h3 className="font-bold text-slate-900 dark:text-white text-lg">Enroll New Employee Identity</h3>
               </div>
               <button
                 onClick={() => setIsCreateModalOpen(false)}
@@ -295,48 +295,48 @@ export default function AdminUsers() {
             <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Employee ID</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Employee ID</label>
                   <input
                     type="text"
                     required
                     value={formData.employee_id}
                     onChange={(e) => setFormData({ ...formData, employee_id: e.target.value })}
                     placeholder="e.g. U301"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-mono font-bold"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-mono font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Full Name</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g. Elena Rostova"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Corporate Email</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Corporate Email</label>
                 <input
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="e.g. elena.rostova@novasolutions.internal"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Department</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Department</label>
                   <select
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                   >
                     <option value="Finance">Finance</option>
                     <option value="Engineering">Engineering</option>
@@ -349,25 +349,25 @@ export default function AdminUsers() {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Role Title</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Role Title</label>
                   <input
                     type="text"
                     required
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                     placeholder="e.g. Financial Analyst"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Security Clearance</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Security Clearance</label>
                   <select
                     value={formData.clearance}
                     onChange={(e) => setFormData({ ...formData, clearance: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                   >
                     <option value="Public">Public (Level 0)</option>
                     <option value="Internal">Internal (Level 1)</option>
@@ -376,11 +376,11 @@ export default function AdminUsers() {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Account Status</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Account Status</label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                   >
                     <option value="ACTIVE">ACTIVE (Authorized)</option>
                     <option value="SUSPENDED">SUSPENDED (Access Blocked)</option>
@@ -392,13 +392,13 @@ export default function AdminUsers() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Initial Password</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Initial Password</label>
                   <input
                     type="password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     placeholder="password123"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900"
                   />
                 </div>
                 <div className="flex items-center pt-6">
@@ -418,7 +418,7 @@ export default function AdminUsers() {
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-semibold"
+                  className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl font-semibold"
                 >
                   Cancel
                 </button>
@@ -441,7 +441,7 @@ export default function AdminUsers() {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-xl w-full p-6 sm:p-8 space-y-6 my-8 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-bold text-slate-900 text-lg">
+              <h3 className="font-bold text-slate-900 dark:text-white text-lg">
                 Edit Employee Attributes: {editingUser?.employee_id}
               </h3>
               <button
@@ -461,34 +461,34 @@ export default function AdminUsers() {
             <form onSubmit={handleEditSubmit} className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Full Name</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Corporate Email</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Corporate Email</label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Department</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Department</label>
                   <select
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                   >
                     <option value="Finance">Finance</option>
                     <option value="Engineering">Engineering</option>
@@ -501,24 +501,24 @@ export default function AdminUsers() {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Role Title</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Role Title</label>
                   <input
                     type="text"
                     required
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Security Clearance</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Security Clearance</label>
                   <select
                     value={formData.clearance}
                     onChange={(e) => setFormData({ ...formData, clearance: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                   >
                     <option value="Public">Public (Level 0)</option>
                     <option value="Internal">Internal (Level 1)</option>
@@ -527,11 +527,11 @@ export default function AdminUsers() {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Account Status</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Account Status</label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                   >
                     <option value="ACTIVE">ACTIVE (Authorized)</option>
                     <option value="SUSPENDED">SUSPENDED (Access Blocked)</option>
@@ -543,13 +543,13 @@ export default function AdminUsers() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Reset Password (leave blank to keep current)</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Reset Password (leave blank to keep current)</label>
                   <input
                     type="password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     placeholder="New password..."
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900"
                   />
                 </div>
                 <div className="flex items-center pt-6">
@@ -569,14 +569,14 @@ export default function AdminUsers() {
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-semibold"
+                  className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold disabled:opacity-50"
+                  className="px-5 py-2 bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-700 text-white rounded-xl font-semibold disabled:opacity-50"
                 >
                   {submitting ? 'Saving...' : 'Save User Attributes'}
                 </button>

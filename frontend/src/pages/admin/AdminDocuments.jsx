@@ -203,15 +203,15 @@ export default function AdminDocuments() {
             <Files className="w-4 h-4 text-indigo-600" />
             <span>Document Repository Governance</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Document Management</h1>
-          <p className="text-xs text-slate-500">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Document Management</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Upload enterprise records (PDF, DOCX, TXT, MD), configure ABAC security policies, and manage lineage versions.
           </p>
         </div>
 
         <button
           onClick={handleOpenUpload}
-          className="inline-flex items-center space-x-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold shadow-xs transition self-start sm:self-auto"
+          className="inline-flex items-center space-x-2 px-4 py-2.5 bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-xs transition self-start sm:self-auto"
         >
           <UploadCloud className="w-4 h-4" />
           <span>Upload Document</span>
@@ -219,7 +219,7 @@ export default function AdminDocuments() {
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between text-xs">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between text-xs">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
           <input
@@ -227,23 +227,23 @@ export default function AdminDocuments() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by title, DOC-ID, or lineage..."
-            className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
         <div className="text-slate-500 font-medium">
-          Total: <span className="font-bold text-slate-900">{documents.length}</span> documents
+          Total: <span className="font-bold text-slate-900 dark:text-white">{documents.length}</span> documents
         </div>
       </div>
 
       {/* Documents Table */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-xs text-slate-400 animate-pulse">Loading documents...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold text-[10px]">
+                <tr className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold text-[10px]">
                   <th className="py-3 px-4">Doc ID</th>
                   <th className="py-3 px-4">Title</th>
                   <th className="py-3 px-4">Format</th>
@@ -256,11 +256,11 @@ export default function AdminDocuments() {
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filteredDocs.map((doc) => (
-                  <tr key={doc.id} className="hover:bg-slate-50/60 transition">
-                    <td className="py-3 px-4 font-mono font-bold text-slate-900">{doc.doc_id}</td>
-                    <td className="py-3 px-4 font-medium text-slate-800 max-w-xs truncate">{doc.title}</td>
+                  <tr key={doc.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition">
+                    <td className="py-3 px-4 font-mono font-bold text-slate-900 dark:text-white">{doc.doc_id}</td>
+                    <td className="py-3 px-4 font-medium text-slate-800 dark:text-slate-200 max-w-xs truncate">{doc.title}</td>
                     <td className="py-3 px-4 font-mono text-[10px] text-slate-500 uppercase">
                       {doc.file_type || 'TXT'}
                     </td>
@@ -273,16 +273,16 @@ export default function AdminDocuments() {
                         {doc.classification}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-slate-600">
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">
                       {doc.allowed_departments?.length > 0 ? doc.allowed_departments.join(', ') : <span className="text-slate-400">All Depts</span>}
                     </td>
-                    <td className="py-3 px-4 text-slate-600">
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">
                       {doc.allowed_roles?.length > 0 ? doc.allowed_roles.join(', ') : <span className="text-slate-400">All Roles</span>}
                     </td>
-                    <td className="py-3 px-4 text-slate-600 font-mono">
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400 font-mono">
                       v{doc.version} <span className="text-slate-400">({doc.lineage_group})</span>
                     </td>
-                    <td className="py-3 px-4 text-slate-600 font-mono">{doc.effective_date}</td>
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400 font-mono">{doc.effective_date}</td>
                     <td className="py-3 px-4">
                       <span className={`text-[10px] px-2 py-0.5 rounded font-semibold ${
                         doc.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'
@@ -317,11 +317,11 @@ export default function AdminDocuments() {
       {/* Upload Document Modal */}
       {isUploadModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl w-full p-6 sm:p-8 space-y-6 my-8 animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-2xl w-full p-6 sm:p-8 space-y-6 my-8 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center space-x-2">
                 <UploadCloud className="w-5 h-5 text-indigo-600" />
-                <h3 className="font-bold text-slate-900 text-lg">Upload Enterprise Document</h3>
+                <h3 className="font-bold text-slate-900 dark:text-white text-lg">Upload Enterprise Document</h3>
               </div>
               <button
                 onClick={() => setIsUploadModalOpen(false)}
@@ -341,10 +341,10 @@ export default function AdminDocuments() {
             <form onSubmit={handleUploadSubmit} className="space-y-4 text-xs">
               {/* File Dropzone */}
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Document File (PDF, DOCX, TXT, MD)</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Document File (PDF, DOCX, TXT, MD)</label>
                 <div 
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-slate-200 hover:border-indigo-400 rounded-2xl p-6 text-center cursor-pointer bg-slate-50 hover:bg-indigo-50/20 transition space-y-2"
+                  className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500 rounded-2xl p-6 text-center cursor-pointer bg-slate-50 dark:bg-slate-800/50 hover:bg-indigo-50/20 transition space-y-2"
                 >
                   <input
                     ref={fileInputRef}
@@ -353,12 +353,12 @@ export default function AdminDocuments() {
                     onChange={handleFileChange}
                     className="hidden"
                   />
-                  <div className="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-xs flex items-center justify-center mx-auto text-indigo-600">
+                  <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs flex items-center justify-center mx-auto text-indigo-600 dark:text-indigo-400">
                     <FileText className="w-5 h-5" />
                   </div>
                   {selectedFile ? (
                     <div>
-                      <div className="font-bold text-slate-900 text-xs">{selectedFile.name}</div>
+                      <div className="font-bold text-slate-900 dark:text-white text-xs">{selectedFile.name}</div>
                       <div className="text-[11px] text-slate-500">{(selectedFile.size / 1024).toFixed(1)} KB</div>
                     </div>
                   ) : (
@@ -371,31 +371,31 @@ export default function AdminDocuments() {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Document Title</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Document Title</label>
                 <input
                   type="text"
                   required
                   value={uploadData.title}
                   onChange={(e) => setUploadData({ ...uploadData, title: e.target.value })}
                   placeholder="e.g. Q4 Executive Strategy Report"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Description / Summary</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Description / Summary</label>
                 <textarea
                   rows="2"
                   value={uploadData.description}
                   onChange={(e) => setUploadData({ ...uploadData, description: e.target.value })}
                   placeholder="Summary of document purpose and contents..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Classification</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Classification</label>
                   <select
                     value={uploadData.classification}
                     onChange={(e) => setUploadData({ 
@@ -403,7 +403,7 @@ export default function AdminDocuments() {
                       classification: e.target.value,
                       required_clearance: e.target.value 
                     })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                   >
                     <option value="Public">Public</option>
                     <option value="Internal">Internal</option>
@@ -412,11 +412,11 @@ export default function AdminDocuments() {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Required Clearance</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Required Clearance</label>
                   <select
                     value={uploadData.required_clearance}
                     onChange={(e) => setUploadData({ ...uploadData, required_clearance: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                   >
                     <option value="Public">Public</option>
                     <option value="Internal">Internal</option>
@@ -428,56 +428,56 @@ export default function AdminDocuments() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Allowed Departments (comma-separated)</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Allowed Departments (comma-separated)</label>
                   <input
                     type="text"
                     value={uploadData.allowed_departments}
                     onChange={(e) => setUploadData({ ...uploadData, allowed_departments: e.target.value })}
                     placeholder="e.g. Finance, Marketing (blank for all)"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Allowed Roles (comma-separated)</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Allowed Roles (comma-separated)</label>
                   <input
                     type="text"
                     value={uploadData.allowed_roles}
                     onChange={(e) => setUploadData({ ...uploadData, allowed_roles: e.target.value })}
                     placeholder="e.g. Financial Analyst, Manager (blank for all)"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Owner Dept</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Owner Dept</label>
                   <input
                     type="text"
                     required
                     value={uploadData.owner_department}
                     onChange={(e) => setUploadData({ ...uploadData, owner_department: e.target.value })}
                     placeholder="Finance"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Version</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Version</label>
                   <input
                     type="text"
                     required
                     value={uploadData.version}
                     onChange={(e) => setUploadData({ ...uploadData, version: e.target.value })}
                     placeholder="1.0"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Status</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Status</label>
                   <select
                     value={uploadData.status}
                     onChange={(e) => setUploadData({ ...uploadData, status: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                   >
                     <option value="ACTIVE">Active (Searchable)</option>
                     <option value="DRAFT">Draft (Hidden)</option>
@@ -490,14 +490,14 @@ export default function AdminDocuments() {
                 <button
                   type="button"
                   onClick={() => setIsUploadModalOpen(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-semibold"
+                  className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={uploading}
-                  className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold disabled:opacity-50 flex items-center space-x-2"
+                  className="px-5 py-2 bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-700 text-white rounded-xl font-semibold disabled:opacity-50 flex items-center space-x-2"
                 >
                   <UploadCloud className="w-4 h-4" />
                   <span>{uploading ? 'Extracting & Ingesting...' : 'Upload & Index'}</span>
@@ -511,9 +511,9 @@ export default function AdminDocuments() {
       {/* Edit Document Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl w-full p-6 sm:p-8 space-y-6 my-8 animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-2xl w-full p-6 sm:p-8 space-y-6 my-8 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-bold text-slate-900 text-lg">
+              <h3 className="font-bold text-slate-900 dark:text-white text-lg">
                 Edit Document Policy: {editingDoc?.doc_id}
               </h3>
               <button
@@ -532,23 +532,23 @@ export default function AdminDocuments() {
 
             <form onSubmit={handleEditSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Title</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Title</label>
                 <input
                   type="text"
                   required
                   value={editFormData.title || ''}
                   onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Classification</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Classification</label>
                   <select
                     value={editFormData.classification || 'Internal'}
                     onChange={(e) => setEditFormData({ ...editFormData, classification: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                   >
                     <option value="Public">Public</option>
                     <option value="Internal">Internal</option>
@@ -557,11 +557,11 @@ export default function AdminDocuments() {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Required Clearance</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Required Clearance</label>
                   <select
                     value={editFormData.required_clearance || 'Internal'}
                     onChange={(e) => setEditFormData({ ...editFormData, required_clearance: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-medium"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-medium"
                   >
                     <option value="Public">Public</option>
                     <option value="Internal">Internal</option>
@@ -573,7 +573,7 @@ export default function AdminDocuments() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Allowed Departments (comma-separated)</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Allowed Departments (comma-separated)</label>
                   <input
                     type="text"
                     value={editFormData.allowed_departments?.join(', ') || ''}
@@ -581,11 +581,11 @@ export default function AdminDocuments() {
                       ...editFormData, 
                       allowed_departments: e.target.value ? e.target.value.split(',').map(s => s.trim()).filter(Boolean) : [] 
                     })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Allowed Roles (comma-separated)</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Allowed Roles (comma-separated)</label>
                   <input
                     type="text"
                     value={editFormData.allowed_roles?.join(', ') || ''}
@@ -593,18 +593,18 @@ export default function AdminDocuments() {
                       ...editFormData, 
                       allowed_roles: e.target.value ? e.target.value.split(',').map(s => s.trim()).filter(Boolean) : [] 
                     })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Document Content</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Document Content</label>
                 <textarea
                   rows="4"
                   value={editFormData.content || ''}
                   onChange={(e) => setEditFormData({ ...editFormData, content: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white font-mono"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 font-mono"
                 />
               </div>
 
@@ -612,14 +612,14 @@ export default function AdminDocuments() {
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl font-semibold"
+                  className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold disabled:opacity-50"
+                  className="px-5 py-2 bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-700 text-white rounded-xl font-semibold disabled:opacity-50"
                 >
                   {saving ? 'Saving...' : 'Save Policy Changes'}
                 </button>

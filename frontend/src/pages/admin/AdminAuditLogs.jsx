@@ -34,27 +34,27 @@ export default function AdminAuditLogs() {
           <FileCheck className="w-4 h-4" />
           <span>Compliance & Audit Trail</span>
         </div>
-        <h1 className="text-2xl font-bold text-slate-900">Security Audit Logs</h1>
-        <p className="text-xs text-slate-500">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Security Audit Logs</h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           Immutable telemetry for all research queries evaluated across the deterministic policy gate.
         </p>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
         <div className="flex items-center space-x-3 w-full sm:w-auto">
           <input
             type="text"
             value={userFilter}
             onChange={(e) => setUserFilter(e.target.value)}
             placeholder="Filter by Employee ID (e.g. U102)..."
-            className="px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 font-mono text-xs"
+            className="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 font-mono text-xs"
           />
 
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none text-xs text-slate-700"
+            className="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-700 dark:text-slate-300 focus:bg-white dark:focus:bg-slate-900 focus:outline-none"
           >
             <option value="">All Statuses</option>
             <option value="SUCCESS">SUCCESS</option>
@@ -65,12 +65,12 @@ export default function AdminAuditLogs() {
         </div>
 
         <div className="text-slate-500 font-medium text-xs">
-          Showing <span className="font-bold text-slate-900">{logs.length}</span> audit records
+          Showing <span className="font-bold text-slate-900 dark:text-white">{logs.length}</span> audit records
         </div>
       </div>
 
       {/* Logs Table */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-xs text-slate-400 animate-pulse">Loading audit telemetry...</div>
         ) : logs.length === 0 ? (
@@ -79,7 +79,7 @@ export default function AdminAuditLogs() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold text-[10px]">
+                <tr className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold text-[10px]">
                   <th className="py-3 px-4">Timestamp</th>
                   <th className="py-3 px-4">Request ID</th>
                   <th className="py-3 px-4">Employee</th>
@@ -91,13 +91,13 @@ export default function AdminAuditLogs() {
                   <th className="py-3 px-4 text-right">Deep Trace</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-slate-50/60 transition">
+                  <tr key={log.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition">
                     <td className="py-3 px-4 text-slate-500 font-mono text-[11px]">
                       {new Date(log.timestamp).toLocaleTimeString()}
                     </td>
-                    <td className="py-3 px-4 font-mono font-bold text-slate-900">{log.request_id}</td>
+                    <td className="py-3 px-4 font-mono font-bold text-slate-900 dark:text-white">{log.request_id}</td>
                     <td className="py-3 px-4 font-semibold text-slate-800">{log.user_employee_id}</td>
                     <td className="py-3 px-4 text-slate-600">
                       {log.user_dept} • <span className="font-mono text-[10px] text-purple-700 font-semibold">{log.user_clearance}</span>
@@ -112,7 +112,7 @@ export default function AdminAuditLogs() {
                         {log.response_status}
                       </span>
                     </td>
-                    <td className="py-3 px-4 font-mono text-slate-600">
+                    <td className="py-3 px-4 font-mono text-slate-600 dark:text-slate-400">
                       {log.candidate_ids?.length || 0} → <span className="font-bold text-emerald-700">{log.authorized_ids?.length || 0}</span>
                     </td>
                     <td className="py-3 px-4 font-mono text-slate-500 text-[11px]">
