@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import CitationModal from '../../components/CitationModal';
@@ -11,7 +12,9 @@ import {
   Plus, 
   MessageSquare, 
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Calendar,
+  ArrowRight
 } from 'lucide-react';
 
 export default function NexusGuard() {
@@ -99,6 +102,7 @@ export default function NexusGuard() {
         citations: response.citations || [],
         evidence_status: response.evidence_status,
         request_id: response.request_id,
+        action_card: response.action_card || null,
         created_at: new Date().toISOString()
       };
 
@@ -241,6 +245,11 @@ export default function NexusGuard() {
                                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                                   <span>Authorized Evidence Grounded</span>
                                 </span>
+                              ) : m.evidence_status === 'WORKPLACE_ACTION' ? (
+                                <span className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-800 dark:text-indigo-300 text-[11px] font-semibold">
+                                  <ShieldCheck className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                                  <span>Governed Workplace Action</span>
+                                </span>
                               ) : (
                                 <span className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-[11px] font-semibold">
                                   <AlertCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
@@ -259,6 +268,63 @@ export default function NexusGuard() {
                           <div className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap font-sans">
                             {m.content}
                           </div>
+
+                          {m.action_card && (
+                            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-3">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                  <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                  <span className="font-semibold text-xs text-slate-900 dark:text-white">
+                                    {m.action_card.action_type === 'LEAVE_APPLICATION' ? 'Workplace Leave Application' : 'Workplace Leave Entitlement'}
+                                  </span>
+                                </div>
+                                {m.action_card.request_id && (
+                                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-bold">
+                                    {m.action_card.request_id}
+                                  </span>
+                                )}
+                              </div>
+
+                              {m.action_card.action_type === 'LEAVE_APPLICATION' ? (
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                                  <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Period</span>
+                                    <span className="font-medium text-slate-900 dark:text-white">{m.action_card.start_date} → {m.action_card.end_date}</span>
+                                  </div>
+                                  <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Duration</span>
+                                    <span className="font-medium text-slate-900 dark:text-white">{m.action_card.days_count} business days</span>
+                                  </div>
+                                  <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Assigned Approver</span>
+                                    <span className="font-medium text-slate-900 dark:text-white">{m.action_card.approver_name || m.action_card.approver_id}</span>
+                                  </div>
+                                  <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Status</span>
+                                    <span className="font-semibold text-amber-600 dark:text-amber-400">{m.action_card.status}</span>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="p-3 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+                                  <span className="text-slate-600 dark:text-slate-300">Available Annual/Casual Balance</span>
+                                  <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">{m.action_card.remaining_balance} Days</span>
+                                </div>
+                              )}
+
+                              <div className="flex items-center justify-between pt-1 text-[11px]">
+                                <span className="text-slate-500 dark:text-slate-400 italic">
+                                  Section 4.2 Governance: Self-approval prohibited. Manager countersignature enforced.
+                                </span>
+                                <Link 
+                                  to="/portal/approvals" 
+                                  className="inline-flex items-center space-x-1 text-emerald-600 dark:text-emerald-400 font-semibold hover:underline"
+                                >
+                                  <span>View in Approvals Portal</span>
+                                  <ArrowRight className="w-3 h-3" />
+                                </Link>
+                              </div>
+                            </div>
+                          )}
 
                           {m.citations && m.citations.length > 0 && (
                             <div className="border-t border-slate-100 dark:border-slate-800 pt-3 space-y-2">

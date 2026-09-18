@@ -3,11 +3,13 @@ from datetime import datetime
 from pydantic import BaseModel
 
 class DecisionItem(BaseModel):
-    doc_id: str
-    title: str
-    classification: str
-    decision: str  # ALLOWED | DENIED
-    reason_code: str  # ALLOWED | CLEARANCE_INSUFFICIENT | ROLE_NOT_ALLOWED | DEPARTMENT_NOT_ALLOWED | INVALID_POLICY_METADATA | EXPLICIT_DENY
+    doc_id: Optional[str] = None
+    title: Optional[str] = None
+    classification: Optional[str] = None
+    decision: Optional[str] = "ALLOWED"  # ALLOWED | DENIED
+    reason_code: Optional[str] = None
+    action: Optional[str] = None
+    target: Optional[str] = None
 
 class AuditLogResponse(BaseModel):
     id: int

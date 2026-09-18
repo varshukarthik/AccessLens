@@ -390,5 +390,83 @@ export const api = {
         citations: []
       };
     }
+  },
+
+  // Governed Workplace Actions
+  async applyLeave(data) {
+    try {
+      const res = await fetch(`${API_BASE}/actions/leave/apply`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data)
+      });
+      return await handleResponse(res);
+    } catch (err) {
+      const curUser = getCurrentStoredUser();
+      return mockBackend.applyLeave(curUser?.employee_id || 'U102', data);
+    }
+  },
+
+  async getMyLeaveRequests() {
+    try {
+      const res = await fetch(`${API_BASE}/actions/leave/my-requests`, {
+        headers: getAuthHeaders()
+      });
+      return await handleResponse(res);
+    } catch (err) {
+      const curUser = getCurrentStoredUser();
+      return mockBackend.getMyLeaveRequests(curUser?.employee_id || 'U102');
+    }
+  },
+
+  async getPendingApprovals() {
+    try {
+      const res = await fetch(`${API_BASE}/actions/leave/pending-approvals`, {
+        headers: getAuthHeaders()
+      });
+      return await handleResponse(res);
+    } catch (err) {
+      const curUser = getCurrentStoredUser();
+      return mockBackend.getPendingApprovals(curUser?.employee_id || 'U102');
+    }
+  },
+
+  async approveLeave(requestId) {
+    try {
+      const res = await fetch(`${API_BASE}/actions/leave/${requestId}/approve`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      return await handleResponse(res);
+    } catch (err) {
+      const curUser = getCurrentStoredUser();
+      return mockBackend.approveLeave(curUser?.employee_id || 'U102', requestId);
+    }
+  },
+
+  async rejectLeave(requestId, rejectionReason = '') {
+    try {
+      const res = await fetch(`${API_BASE}/actions/leave/${requestId}/reject`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ rejection_reason: rejectionReason })
+      });
+      return await handleResponse(res);
+    } catch (err) {
+      const curUser = getCurrentStoredUser();
+      return mockBackend.rejectLeave(curUser?.employee_id || 'U102', requestId, rejectionReason);
+    }
+  },
+
+  async getLeaveBalance() {
+    try {
+      const res = await fetch(`${API_BASE}/actions/leave/balance`, {
+        headers: getAuthHeaders()
+      });
+      return await handleResponse(res);
+    } catch (err) {
+      const curUser = getCurrentStoredUser();
+      return mockBackend.getLeaveBalance(curUser?.employee_id || 'U102');
+    }
   }
 };

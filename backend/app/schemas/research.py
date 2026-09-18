@@ -16,11 +16,12 @@ class CitationItem(BaseModel):
 
 class ResearchResponse(BaseModel):
     request_id: str
-    status: str  # SUCCESS | NO_AUTHORIZED_EVIDENCE | CONFLICT | ERROR
+    status: str  # SUCCESS | NO_AUTHORIZED_EVIDENCE | CONFLICT | ERROR | ACTION_PROCESSED
     answer: str
     citations: List[CitationItem] = []
-    evidence_status: str  # AUTHORIZED_EVIDENCE_USED | NO_AUTHORIZED_EVIDENCE | CONFLICT_DETECTED
+    evidence_status: str  # AUTHORIZED_EVIDENCE_USED | NO_AUTHORIZED_EVIDENCE | CONFLICT_DETECTED | WORKPLACE_ACTION
     session_id: str
+    action_card: Optional[Any] = None
     
     # Note: Admin traces are NEVER included in this employee response schema.
 

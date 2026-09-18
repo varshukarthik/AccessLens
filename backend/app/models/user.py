@@ -17,6 +17,8 @@ class User(Base):
     groups_json = Column(Text, nullable=False, default="[]")
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
+    manager_id = Column(String(50), nullable=True, index=True)
+    leave_balance = Column(Integer, nullable=False, default=18)
     password_hash = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))

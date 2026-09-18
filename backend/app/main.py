@@ -11,6 +11,7 @@ from app.api.research import router as research_router
 from app.api.documents import router as documents_router
 from app.api.admin import router as admin_router
 from app.api.portal import router as portal_router
+from app.api.actions import router as actions_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -47,6 +48,7 @@ app.include_router(research_router, prefix=settings.API_V1_STR)
 app.include_router(documents_router, prefix=settings.API_V1_STR)
 app.include_router(admin_router, prefix=settings.API_V1_STR)
 app.include_router(portal_router, prefix=settings.API_V1_STR)
+app.include_router(actions_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 def root():

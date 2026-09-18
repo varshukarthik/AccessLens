@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
 from app.models.document import Document
+from app.models.leave import LeaveRequest
 from app.core.security import get_password_hash
 
 def seed_database(db: Session):
@@ -311,3 +312,95 @@ def seed_database(db: Session):
             db.add(d)
         db.commit()
         print("[Seed] Documents seeded successfully.")
+
+    # 3. Ensure all existing users have manager_id and leave_balance
+    user_updates = {
+        "U102": ("U301", 18),
+        "U205": ("EXEC001", 15),
+        "U301": ("EXEC001", 22),
+        "Admin": ("EXEC001", 20),
+        "EXEC001": (None, 25)
+    }
+    for emp_id, (mgr_id, bal) in user_updates.items():
+        u = db.query(User).filter(User.employee_id == emp_id).first()
+        if u:
+            u.manager_id = mgr_id
+            if not u.leave_balance or u.leave_balance == 0:
+                u.leave_balance = bal
+    db.commit()
+
+    # 4. Seed Leave Policy Document if missing
+    existing_doc = db.query(Document).filter(Document.doc_id == "DOC-401").first()
+    if not existing_doc:
+        doc_401 = Document(
+            doc_id="DOC-401",
+            title="Nova Solutions Employee Leave and Attendance Policy",
+            description="Comprehensive guidelines governing annual casual, sick, personal time-off, and manager approval hierarchy.",
+            content="All active Nova Solutions employees receive 18 days of standard annual paid leave per calendar year. Leave requests must be submitted through the NexusGuard enterprise assistant and are subject to validation against current leave balances, date chronological validity, and department operational coverage. Overlapping leave requests and requests exceeding available balances are automatically blocked. All submissions are deterministically routed to the employee's direct manager or authorized department administrator. Self-approval of leave requests is strictly forbidden under corporate governance regulations.",
+            summary="Official corporate guidelines on leave allocation, manager approval routing, and self-approval restrictions.",
+            classification="Internal",
+            required_clearance="Internal",
+            allowed_departments_json="[]",
+            allowed_roles_json="[]",
+            explicit_denies_json="[]",
+            owner_department="Human Resources",
+            version="1.0",
+            lineage_group="HR_POLICIES",
+            effective_date="2026-09-01",
+            status="ACTIVE",
+            uploaded_by="Admin",
+            is_searchable=True
+        )
+        db.add(doc_401)
+        db.commit()
+
+    # 5. Seed initial Leave Requests
+    if db.query(LeaveRequest).count() == 0:
+        seed_leaves = [
+            LeaveRequest(
+                request_id="LEV-2026-001",
+                employee_id="U102",
+                employee_name="David Chen",
+                department="Finance",
+                leave_type="Casual",
+                start_date="2026-08-10",
+                end_date="2026-08-11",
+                days_count=2,
+                reason="Personal family commitment.",
+                status="Approved",
+                approver_id="U301",
+                approver_name="Michael Ross"
+            ),
+            LeaveRequest(
+                request_id="LEV-2026-002",
+                employee_id="U205",
+                employee_name="Sarah Jenkins",
+                department="Marketing",
+                leave_type="Annual",
+                start_date="2026-09-28",
+                end_date="2026-09-30",
+                days_count=3,
+                reason="Annual scheduled vacation.",
+                status="Pending",
+                approver_id="EXEC001",
+                approver_name="Victoria Sterling"
+            ),
+            LeaveRequest(
+                request_id="LEV-2026-003",
+                employee_id="U301",
+                employee_name="Michael Ross",
+                department="Finance",
+                leave_type="Personal",
+                start_date="2026-10-05",
+                end_date="2026-10-06",
+                days_count=2,
+                reason="Personal business errands.",
+                status="Pending",
+                approver_id="EXEC001",
+                approver_name="Victoria Sterling"
+            )
+        ]
+        for lr in seed_leaves:
+            db.add(lr)
+        db.commit()
+        print("[Seed] Leave requests and HR policy seeded successfully.")

@@ -19,6 +19,8 @@ const INITIAL_USERS = [
     clearance: "Internal",
     status: "ACTIVE",
     is_admin: false,
+    manager_id: "U301",
+    leave_balance: 18,
     password: "password123"
   },
   {
@@ -31,6 +33,8 @@ const INITIAL_USERS = [
     clearance: "Internal",
     status: "ACTIVE",
     is_admin: false,
+    manager_id: "EXEC001",
+    leave_balance: 15,
     password: "password123"
   },
   {
@@ -43,6 +47,8 @@ const INITIAL_USERS = [
     clearance: "Internal",
     status: "ACTIVE",
     is_admin: false,
+    manager_id: "EXEC001",
+    leave_balance: 20,
     password: "password123"
   },
   {
@@ -55,6 +61,8 @@ const INITIAL_USERS = [
     clearance: "Restricted",
     status: "ACTIVE",
     is_admin: true,
+    manager_id: "EXEC001",
+    leave_balance: 22,
     password: "adminpassword"
   },
   {
@@ -67,6 +75,8 @@ const INITIAL_USERS = [
     clearance: "Restricted",
     status: "ACTIVE",
     is_admin: false,
+    manager_id: null,
+    leave_balance: 25,
     password: "execpassword"
   }
 ];
@@ -299,17 +309,114 @@ const INITIAL_DOCUMENTS = [
     effective_date: "2026-09-10",
     status: "ACTIVE",
     is_searchable: true
+  },
+  {
+    id: 11,
+    doc_id: "DOC-401",
+    title: "HR Leave and Paid Time Off (PTO) Policy",
+    description: "Standard workplace leave policies, entitlements, and approval rules for all full-time Nova Solutions employees.",
+    content: "Nova Solutions Leave & Paid Time Off (PTO) Policy:\n1. Standard Annual Entitlement: All full-time employees are allocated 18 to 25 days of paid annual/casual leave per fiscal year.\n2. Application Procedure: Leave must be submitted through NexusGuard or the Nova Workplace Portal at least 48 hours prior to planned absence.\n3. Approval Chain: All leave requests require managerial review and electronic authorization by the designated direct supervisor/manager.\n4. Self-Approval Prohibition: Employees and managers are strictly barred from approving their own leave requests under Section 4.2 of Governance Rules. Direct manager or executive countersignature is required.\n5. Consecutive Leave: Consecutive leaves exceeding 10 business days require departmental director or HR VP approval.",
+    summary: "Standard workplace leave policy detailing 18-25 days PTO, managerial approval workflows, and strict prohibition of self-approval.",
+    classification: "Internal",
+    required_clearance: "Internal",
+    allowed_departments: [],
+    allowed_roles: [],
+    explicit_denies: [],
+    owner_department: "Human Resources",
+    version: "1.0",
+    lineage_group: "HR_LEAVE_POLICY",
+    effective_date: "2026-01-01",
+    status: "ACTIVE",
+    is_searchable: true
+  }
+];
+
+const USER_DEFAULTS = {
+  "U102": { manager_id: "U301", leave_balance: 18 },
+  "U205": { manager_id: "EXEC001", leave_balance: 15 },
+  "U301": { manager_id: "EXEC001", leave_balance: 20 },
+  "Admin": { manager_id: "EXEC001", leave_balance: 22 },
+  "EXEC001": { manager_id: null, leave_balance: 25 }
+};
+
+const INITIAL_LEAVE_REQUESTS = [
+  {
+    request_id: "LEV-2026-001",
+    employee_id: "U102",
+    employee_name: "David Chen",
+    department: "Finance",
+    leave_type: "Casual",
+    start_date: "2026-08-10",
+    end_date: "2026-08-11",
+    days_count: 2,
+    reason: "Personal family commitment.",
+    status: "Approved",
+    approver_id: "U301",
+    approver_name: "Michael Ross",
+    rejection_reason: null,
+    created_at: new Date(Date.now() - 30 * 86400000).toISOString()
+  },
+  {
+    request_id: "LEV-2026-002",
+    employee_id: "U205",
+    employee_name: "Sarah Jenkins",
+    department: "Marketing",
+    leave_type: "Annual",
+    start_date: "2026-09-28",
+    end_date: "2026-09-30",
+    days_count: 3,
+    reason: "Annual scheduled vacation.",
+    status: "Pending",
+    approver_id: "EXEC001",
+    approver_name: "Victoria Sterling",
+    rejection_reason: null,
+    created_at: new Date(Date.now() - 2 * 86400000).toISOString()
+  },
+  {
+    request_id: "LEV-2026-003",
+    employee_id: "U301",
+    employee_name: "Michael Ross",
+    department: "Finance",
+    leave_type: "Personal",
+    start_date: "2026-10-05",
+    end_date: "2026-10-06",
+    days_count: 2,
+    reason: "Personal business errands.",
+    status: "Pending",
+    approver_id: "EXEC001",
+    approver_name: "Victoria Sterling",
+    rejection_reason: null,
+    created_at: new Date(Date.now() - 1 * 86400000).toISOString()
   }
 ];
 
 // Helper to get storage
 function getStoredUsers() {
   const data = localStorage.getItem('nova_users_store');
+  let users = INITIAL_USERS;
+  if (data) {
+    try { users = JSON.parse(data); } catch(e) {}
+  }
+  users = users.map(u => ({
+    ...u,
+    manager_id: u.manager_id !== undefined ? u.manager_id : (USER_DEFAULTS[u.employee_id]?.manager_id ?? null),
+    leave_balance: u.leave_balance !== undefined ? u.leave_balance : (USER_DEFAULTS[u.employee_id]?.leave_balance ?? 18)
+  }));
+  localStorage.setItem('nova_users_store', JSON.stringify(users));
+  return users;
+}
+
+function getStoredLeaveRequests() {
+  const data = localStorage.getItem('nova_leave_requests_store');
   if (data) {
     try { return JSON.parse(data); } catch(e) {}
   }
-  localStorage.setItem('nova_users_store', JSON.stringify(INITIAL_USERS));
-  return INITIAL_USERS;
+  localStorage.setItem('nova_leave_requests_store', JSON.stringify(INITIAL_LEAVE_REQUESTS));
+  return INITIAL_LEAVE_REQUESTS;
+}
+
+function saveLeaveRequests(requests) {
+  localStorage.setItem('nova_leave_requests_store', JSON.stringify(requests));
 }
 
 function getStoredDocuments() {
@@ -391,7 +498,9 @@ export const mockBackend = {
         department: user.department,
         clearance: user.clearance,
         status: user.status,
-        is_admin: user.is_admin
+        is_admin: user.is_admin,
+        manager_id: user.manager_id,
+        leave_balance: user.leave_balance
       }
     };
   },
@@ -470,8 +579,151 @@ export const mockBackend = {
 
   queryNexusGuard(user, query) {
     const docs = getStoredDocuments();
-    const queryLower = (query || '').toLowerCase();
+    const queryLower = (query || '').toLowerCase().trim();
     const requestId = `REQ-${Date.now().toString().slice(-6)}`;
+
+    // 0. Governed Workplace Action Intent Recognition
+    const isApplyLeave = (queryLower.includes('apply') && queryLower.includes('leave')) ||
+                         (queryLower.includes('request') && queryLower.includes('leave')) ||
+                         queryLower.includes('take leave') || queryLower.includes('submit leave') || queryLower.includes('book leave');
+
+    const isBalanceInquiry = queryLower.includes('leave balance') || 
+                             queryLower.includes('how many days') || 
+                             (queryLower.includes('balance') && queryLower.includes('leave'));
+
+    const isStatusInquiry = queryLower.includes('leave status') || 
+                            queryLower.includes('status of my leave') || 
+                            queryLower.includes('pending leaves') ||
+                            queryLower.includes('my leave requests');
+
+    if (isApplyLeave) {
+      let startDate = "2026-09-23";
+      let endDate = "2026-09-25";
+
+      const isoMatches = query.match(/(\d{4}-\d{2}-\d{2})/g);
+      if (isoMatches && isoMatches.length >= 2) {
+        startDate = isoMatches[0];
+        endDate = isoMatches[1];
+      } else {
+        const monthMap = {
+          'january': '01', 'february': '02', 'march': '03', 'april': '04',
+          'may': '05', 'june': '06', 'july': '07', 'august': '08',
+          'september': '09', 'october': '10', 'november': '11', 'december': '12',
+          'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04',
+          'jun': '06', 'jul': '07', 'aug': '08', 'sep': '09', 'oct': '10', 'nov': '11', 'dec': '12'
+        };
+        const textMatches = query.match(/(\d{1,2})\s+([a-zA-Z]+)(?:\s+to\s+|\s*-\s*)(\d{1,2})\s+([a-zA-Z]+)/i);
+        if (textMatches) {
+          const m1 = monthMap[textMatches[2].toLowerCase()] || '09';
+          const m2 = monthMap[textMatches[4].toLowerCase()] || '09';
+          startDate = `2026-${m1}-${textMatches[1].padStart(2, '0')}`;
+          endDate = `2026-${m2}-${textMatches[3].padStart(2, '0')}`;
+        }
+      }
+
+      let reason = "Personal errands and personal leave";
+      const forMatch = query.match(/for\s+(.+)$/i);
+      if (forMatch) {
+        reason = forMatch[1].trim();
+      }
+
+      try {
+        const req = this.applyLeave(user.employee_id, {
+          start_date: startDate,
+          end_date: endDate,
+          leave_type: "Casual",
+          reason: reason
+        });
+
+        return {
+          session_id: `ses-${Date.now()}`,
+          request_id: requestId,
+          status: "ACTION_PROCESSED",
+          evidence_status: "WORKPLACE_ACTION",
+          answer: `Your leave request from ${startDate} to ${endDate} (${req.days_count} business days) has been registered successfully.\n\nStatus: Pending Manager Approval\nAssigned Approver: ${req.approver_name} (${req.approver_id})\nReason: "${reason}"\nRemaining Balance: ${user.leave_balance} days\n\nUnder Section 4.2 of Nova Solutions Governance Rules, all workplace leave actions require supervisor countersignature and self-approval is strictly barred. You will receive an automated notification once reviewed.`,
+          citations: [{
+            document_id: "DOC-401",
+            title: "HR Leave and Paid Time Off (PTO) Policy",
+            version: "1.0",
+            effective_date: "2026-01-01",
+            classification: "Internal"
+          }],
+          action_card: {
+            action_type: "LEAVE_APPLICATION",
+            request_id: req.request_id,
+            employee_id: user.employee_id,
+            employee_name: user.name,
+            leave_type: req.leave_type,
+            start_date: req.start_date,
+            end_date: req.end_date,
+            days_count: req.days_count,
+            reason: req.reason,
+            status: req.status,
+            approver_id: req.approver_id,
+            approver_name: req.approver_name,
+            remaining_balance: user.leave_balance,
+            created_at: req.created_at
+          }
+        };
+      } catch (err) {
+        return {
+          session_id: `ses-${Date.now()}`,
+          request_id: requestId,
+          status: "ERROR",
+          evidence_status: "WORKPLACE_ACTION",
+          answer: `Unable to submit leave request: ${err.message}`,
+          citations: []
+        };
+      }
+    }
+
+    if (isBalanceInquiry) {
+      const summary = this.getLeaveBalance(user.employee_id);
+      return {
+        session_id: `ses-${Date.now()}`,
+        request_id: requestId,
+        status: "SUCCESS",
+        evidence_status: "WORKPLACE_ACTION",
+        answer: `Here is your current leave entitlement status:\n• Available Leave Balance: ${summary.leave_balance} days\n• Pending Requests Awaiting Manager Approval: ${summary.pending_leaves_count}\n• Approved Leaves Taken: ${summary.approved_leaves_count}`,
+        citations: [{
+          document_id: "DOC-401",
+          title: "HR Leave and Paid Time Off (PTO) Policy",
+          version: "1.0",
+          effective_date: "2026-01-01",
+          classification: "Internal"
+        }],
+        action_card: {
+          action_type: "LEAVE_BALANCE_INQUIRY",
+          employee_id: user.employee_id,
+          employee_name: user.name,
+          remaining_balance: summary.leave_balance,
+          status: "ACTIVE"
+        }
+      };
+    }
+
+    if (isStatusInquiry) {
+      const requests = this.getMyLeaveRequests(user.employee_id);
+      if (requests.length === 0) {
+        return {
+          session_id: `ses-${Date.now()}`,
+          request_id: requestId,
+          status: "SUCCESS",
+          evidence_status: "WORKPLACE_ACTION",
+          answer: `You currently have no active or historical leave requests on record.`,
+          citations: []
+        };
+      }
+      const listSummary = requests.map(r => `• ${r.request_id}: ${r.start_date} to ${r.end_date} (${r.days_count} days) — Status: [${r.status}] (Approver: ${r.approver_name})`).join('\n');
+      return {
+        session_id: `ses-${Date.now()}`,
+        request_id: requestId,
+        status: "SUCCESS",
+        evidence_status: "WORKPLACE_ACTION",
+        answer: `Your recorded leave requests:\n\n${listSummary}`,
+        citations: []
+      };
+    }
 
     // 1. Candidate Retrieval (Keyword Matching)
     const tokens = queryLower.split(/\s+/).filter(t => t.length > 2);
@@ -699,6 +951,228 @@ export const mockBackend = {
         { code: "ROLE_NOT_ALLOWED", description: "User role does not match document allowed role list." },
         { code: "EXPLICIT_DENY", description: "User is explicitly listed in document deny rule." }
       ]
+    };
+  },
+
+  // Governed Workplace Actions
+  applyLeave(employeeId, data) {
+    const users = getStoredUsers();
+    const user = users.find(u => u.employee_id === employeeId);
+    if (!user) throw new Error("User not found.");
+
+    const startDate = data.start_date;
+    const endDate = data.end_date;
+    if (!startDate || !endDate) {
+      throw new Error("Start date and end date are required (YYYY-MM-DD format).");
+    }
+    const d1 = new Date(startDate);
+    const d2 = new Date(endDate);
+    if (isNaN(d1.getTime()) || isNaN(d2.getTime())) {
+      throw new Error("Invalid date format. Use YYYY-MM-DD.");
+    }
+    if (d1 > d2) {
+      throw new Error("Start date must be before or equal to end date.");
+    }
+
+    const daysCount = Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)) + 1);
+
+    if (daysCount > user.leave_balance) {
+      throw new Error(`Insufficient leave balance: Requested ${daysCount} days, but available balance is ${user.leave_balance} days.`);
+    }
+
+    // Check overlap
+    const existing = getStoredLeaveRequests().filter(r => r.employee_id === employeeId && r.status !== 'Rejected');
+    for (const r of existing) {
+      if (!(endDate < r.start_date || startDate > r.end_date)) {
+        throw new Error(`Conflict detected: You already have a leave request (${r.request_id} [${r.status}]) from ${r.start_date} to ${r.end_date} overlapping with this period.`);
+      }
+    }
+
+    let approver = null;
+    if (user.manager_id) {
+      approver = users.find(u => u.employee_id === user.manager_id);
+    }
+    if (!approver) {
+      approver = users.find(u => u.employee_id === 'EXEC001') || { employee_id: 'EXEC001', name: 'Victoria Sterling' };
+    }
+
+    const reqId = `LEV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const newReq = {
+      request_id: reqId,
+      employee_id: user.employee_id,
+      employee_name: user.name,
+      department: user.department,
+      leave_type: data.leave_type || "Casual",
+      start_date: startDate,
+      end_date: endDate,
+      days_count: daysCount,
+      reason: data.reason || "Personal leave request",
+      status: "Pending",
+      approver_id: approver.employee_id,
+      approver_name: approver.name,
+      rejection_reason: null,
+      created_at: new Date().toISOString()
+    };
+
+    const allRequests = getStoredLeaveRequests();
+    allRequests.unshift(newReq);
+    saveLeaveRequests(allRequests);
+
+    addAuditLog({
+      request_id: `REQ-ACT-${Date.now().toString().slice(-6)}`,
+      timestamp: new Date().toISOString(),
+      user_employee_id: user.employee_id,
+      user_dept: user.department,
+      user_role: user.role,
+      user_clearance: user.clearance,
+      query: `APPLY_LEAVE: ${startDate} to ${endDate} (${daysCount} days)`,
+      candidate_ids: ["DOC-401"],
+      authorization_decisions: [{
+        action: "LEAVE_APPLY",
+        decision: "ALLOWED",
+        target: approver.employee_id,
+        reason_code: "SUBMITTED_FOR_APPROVAL"
+      }],
+      authorized_ids: ["DOC-401"],
+      selected_ids: ["DOC-401"],
+      response_status: "SUCCESS",
+      answer_preview: `Leave request ${reqId} created and routed to ${approver.name}.`
+    });
+
+    return newReq;
+  },
+
+  getMyLeaveRequests(employeeId) {
+    const all = getStoredLeaveRequests();
+    return all.filter(r => r.employee_id === employeeId);
+  },
+
+  getPendingApprovals(managerId) {
+    const users = getStoredUsers();
+    const user = users.find(u => u.employee_id === managerId);
+    const all = getStoredLeaveRequests();
+    if (user?.is_admin) {
+      return all.filter(r => r.status === 'Pending' && r.employee_id !== managerId);
+    }
+    return all.filter(r => r.approver_id === managerId && r.status === 'Pending' && r.employee_id !== managerId);
+  },
+
+  approveLeave(approverId, requestId) {
+    const users = getStoredUsers();
+    const approver = users.find(u => u.employee_id === approverId);
+    const all = getStoredLeaveRequests();
+    const req = all.find(r => r.request_id === requestId);
+    if (!req) throw new Error("Leave request not found.");
+
+    if (req.employee_id === approverId) {
+      const err = new Error("Self-approval violation: An employee cannot approve their own leave request under Section 4.2 Governance Rules.");
+      err.status = 403;
+      throw err;
+    }
+
+    if (!approver?.is_admin && req.approver_id !== approverId) {
+      const err = new Error("Unauthorized approver: Only the assigned manager or administrator can approve this request.");
+      err.status = 403;
+      throw err;
+    }
+
+    if (req.status !== 'Pending') {
+      throw new Error(`Request has already been marked as ${req.status}.`);
+    }
+
+    // Deduct balance
+    const employee = users.find(u => u.employee_id === req.employee_id);
+    if (employee) {
+      employee.leave_balance = Math.max(0, (employee.leave_balance || 18) - req.days_count);
+      localStorage.setItem('nova_users_store', JSON.stringify(users));
+    }
+
+    req.status = 'Approved';
+    saveLeaveRequests(all);
+
+    addAuditLog({
+      request_id: `REQ-APP-${Date.now().toString().slice(-6)}`,
+      timestamp: new Date().toISOString(),
+      user_employee_id: approverId,
+      user_dept: approver?.department,
+      user_role: approver?.role,
+      user_clearance: approver?.clearance,
+      query: `APPROVE_LEAVE: ${requestId}`,
+      candidate_ids: [],
+      authorization_decisions: [{
+        action: "LEAVE_APPROVE",
+        decision: "ALLOWED",
+        target: req.employee_id,
+        reason_code: "MANAGER_AUTHORIZED"
+      }],
+      authorized_ids: [],
+      selected_ids: [],
+      response_status: "SUCCESS",
+      answer_preview: `Approved leave request ${requestId} for ${req.employee_name}.`
+    });
+
+    return req;
+  },
+
+  rejectLeave(approverId, requestId, rejectionReason = '') {
+    const users = getStoredUsers();
+    const approver = users.find(u => u.employee_id === approverId);
+    const all = getStoredLeaveRequests();
+    const req = all.find(r => r.request_id === requestId);
+    if (!req) throw new Error("Leave request not found.");
+
+    if (req.employee_id === approverId) {
+      const err = new Error("Self-approval violation: An employee cannot decide their own leave request.");
+      err.status = 403;
+      throw err;
+    }
+
+    if (!approver?.is_admin && req.approver_id !== approverId) {
+      const err = new Error("Unauthorized approver: Only the assigned manager or administrator can reject this request.");
+      err.status = 403;
+      throw err;
+    }
+
+    req.status = 'Rejected';
+    req.rejection_reason = rejectionReason || 'Operational workload constraints';
+    saveLeaveRequests(all);
+
+    addAuditLog({
+      request_id: `REQ-REJ-${Date.now().toString().slice(-6)}`,
+      timestamp: new Date().toISOString(),
+      user_employee_id: approverId,
+      user_dept: approver?.department,
+      user_role: approver?.role,
+      user_clearance: approver?.clearance,
+      query: `REJECT_LEAVE: ${requestId}`,
+      candidate_ids: [],
+      authorization_decisions: [{
+        action: "LEAVE_REJECT",
+        decision: "ALLOWED",
+        target: req.employee_id,
+        reason_code: "MANAGER_REJECTED"
+      }],
+      authorized_ids: [],
+      selected_ids: [],
+      response_status: "SUCCESS",
+      answer_preview: `Rejected leave request ${requestId} for ${req.employee_name}.`
+    });
+
+    return req;
+  },
+
+  getLeaveBalance(employeeId) {
+    const users = getStoredUsers();
+    const user = users.find(u => u.employee_id === employeeId);
+    const all = getStoredLeaveRequests().filter(r => r.employee_id === employeeId);
+    const pendingCount = all.filter(r => r.status === 'Pending').length;
+    const approvedCount = all.filter(r => r.status === 'Approved').length;
+
+    return {
+      employee_id: employeeId,
+      leave_balance: user ? user.leave_balance : 18,
+      pending_leaves_count: pendingCount,
+      approved_leaves_count: approvedCount
     };
   },
 
